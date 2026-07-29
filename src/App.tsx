@@ -32,7 +32,7 @@ function RouteMetadata() {
     const title = pathname.startsWith("/offre/")
       ? "Détail de l’offre"
       : (pageTitles[pathname] ?? "Page introuvable");
-    document.title = `${title} — Offrely`;
+    document.title = `${title} — Dealyva`;
   }, [pathname]);
 
   return null;

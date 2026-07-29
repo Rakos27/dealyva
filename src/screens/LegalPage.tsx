@@ -21,7 +21,7 @@ export function LegalPage() {
         </p>
         <h1 id="legal-title">Un prototype clair sur ce qu’il est.</h1>
         <p>
-          Offrely est actuellement une démonstration fonctionnelle. Cette page
+          Dealyva est actuellement une démonstration fonctionnelle. Cette page
           distingue les choix du prototype des informations qui devront être
           complétées avant toute mise en service publique.
         </p>
@@ -61,7 +61,7 @@ export function LegalPage() {
             <div className="legal-card">
               <h3>Éditeur du prototype</h3>
               <p>
-                Offrely est présenté ici comme un concept de produit et non
+                Dealyva est présenté ici comme un concept de produit et non
                 comme un service commercial exploité par une société
                 identifiée. Les coordonnées de l’éditeur, la forme juridique,
                 le capital social, le numéro d’immatriculation et le directeur
@@ -83,7 +83,7 @@ export function LegalPage() {
             <div className="legal-card">
               <h3>Propriété intellectuelle</h3>
               <p>
-                L’interface et les contenus éditoriaux propres à Offrely sont
+                L’interface et les contenus éditoriaux propres à Dealyva sont
                 présentés à des fins de prototypage. Les noms, marques et
                 signes distinctifs cités restent la propriété de leurs
                 titulaires respectifs. Leur présence n’implique ni partenariat
@@ -148,7 +148,7 @@ export function LegalPage() {
                 <Cookie aria-hidden="true" size={18} />
                 <p>
                   Aucun profil publicitaire ou commercial n’est construit par
-                  Offrely dans cette démonstration.
+                  Dealyva dans cette démonstration.
                 </p>
               </div>
             </div>
@@ -156,7 +156,7 @@ export function LegalPage() {
             <div className="legal-card">
               <h3>Vos droits</h3>
               <p>
-                Si Offrely devient un service connecté, cette section précisera
+                Si Dealyva devient un service connecté, cette section précisera
                 le responsable du traitement, les finalités, bases légales,
                 durées de conservation, destinataires et modalités d’exercice
                 des droits prévus par la réglementation applicable.
@@ -176,32 +176,31 @@ export function LegalPage() {
             </div>
 
             <div className="legal-card legal-card--highlight">
-              <h3>Des offres fictives, jamais présentées comme réelles</h3>
+              <h3>Des sources d’offres clairement identifiées</h3>
               <p>
-                Les prix, remises, codes promotionnels, dates de vérification
-                et disponibilités visibles dans Offrely sont des données de
-                démonstration. Ils ne constituent ni une proposition
-                commerciale ni une garantie de prix chez les marques citées.
+                Dealyva distingue les offres partenaires synchronisées via Awin
+                des données de démonstration. Les conditions, prix et
+                disponibilités d’une offre partenaire doivent toujours être
+                vérifiés sur le site du marchand.
               </p>
             </div>
 
             <div className="legal-card">
-              <h3>Un modèle sans mise en avant payante</h3>
+              <h3>Une affiliation transparente</h3>
               <p>
-                Cette version est gratuite, sans publicité, affiliation ou
-                offre sponsorisée. Les classements et recommandations simulés
-                reposent uniquement sur les préférences et interactions
-                enregistrées localement. Si le modèle économique évolue, la
-                nature de chaque contenu commercial devra être explicitement
-                signalée.
+                Certains liens vers les marchands sont des liens d’affiliation :
+                Dealyva peut percevoir une commission si un achat éligible est
+                réalisé, sans surcoût pour l’utilisateur. Cette relation est
+                signalée sur les offres concernées et n’accorde pas de priorité
+                payante dans les classements.
               </p>
             </div>
 
             <div className="legal-card">
               <h3>Avant de profiter d’une offre</h3>
               <p>
-                Dans une future version connectée, l’utilisateur devra toujours
-                vérifier le prix final, la disponibilité et les conditions
+                L’utilisateur doit toujours vérifier le prix final, la
+                disponibilité et les conditions
                 directement sur le site du marchand. Celui-ci restera seul
                 responsable de la vente, du paiement, de la livraison et du
                 service après-vente.
@@ -210,7 +209,7 @@ export function LegalPage() {
           </section>
         </article>
 
-        <aside className="legal-sidebar" aria-label="Principes Offrely">
+        <aside className="legal-sidebar" aria-label="Principes Dealyva">
           <div className="legal-sidebar__card">
             <Sparkles aria-hidden="true" size={20} />
             <h2>Nos principes de prototype</h2>

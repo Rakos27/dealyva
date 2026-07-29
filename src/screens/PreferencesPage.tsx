@@ -130,7 +130,7 @@ export default function PreferencesPage() {
         <div>
           <h2 id="alerts-demo-title">Aucune notification réelle n’est envoyée</h2>
           <p>
-            Ces alertes illustrent le futur service Offrely. Aucun service
+            Ces alertes illustrent le futur service Dealyva. Aucun service
             d’e-mail, de notification push ou de suivi de prix n’est connecté.
           </p>
         </div>

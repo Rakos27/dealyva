@@ -1,5 +1,5 @@
-import OffrelyClient from "../offrely-client";
+import DealyvaClient from "../dealyva-client";
 
-export default function OffrelyPage() {
-  return <OffrelyClient />;
+export default function DealyvaPage() {
+  return <DealyvaClient />;
 }

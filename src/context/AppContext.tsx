@@ -139,7 +139,8 @@ interface PromotionFeed {
   promotions: Promotion[];
 }
 
-const STORAGE_KEY = "offrely:app-state";
+const STORAGE_KEY = "dealyva:app-state";
+const LEGACY_STORAGE_KEY = "offrely:app-state";
 const STORAGE_VERSION = 2;
 const MAX_RECENTLY_VIEWED = 20;
 const MAX_NOTIFICATIONS = 30;
@@ -449,7 +450,9 @@ function readStoredState(): StoredAppState {
   }
 
   try {
-    const rawValue = window.localStorage.getItem(STORAGE_KEY);
+    const rawValue =
+      window.localStorage.getItem(STORAGE_KEY) ??
+      window.localStorage.getItem(LEGACY_STORAGE_KEY);
     if (!rawValue) {
       return fallback;
     }
@@ -538,6 +541,7 @@ export function AppProvider({ children }: PropsWithChildren) {
 
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(envelope));
+      window.localStorage.removeItem(LEGACY_STORAGE_KEY);
     } catch {
       // A full or disabled localStorage must not prevent using the demo.
     }
@@ -778,7 +782,7 @@ export function AppProvider({ children }: PropsWithChildren) {
 
   const login = useCallback(
     (details: LoginDetails) => {
-      const name = details.name.trim() || "Utilisateur Offrely";
+      const name = details.name.trim() || "Utilisateur Dealyva";
       const user: DemoUser = {
         name,
         email: details.email.trim().toLocaleLowerCase("fr-FR"),
@@ -865,7 +869,7 @@ export function AppProvider({ children }: PropsWithChildren) {
           category: input.category,
           title: input.title,
           description:
-            "Promotion fictive ajoutée depuis l’administration de démonstration Offrely.",
+            "Promotion fictive ajoutée depuis l’administration de démonstration Dealyva.",
           ...pricing,
           image: visual,
           expiresAt: input.expiresAt,
@@ -1212,7 +1216,7 @@ export function AppProvider({ children }: PropsWithChildren) {
     try {
       for (let index = window.localStorage.length - 1; index >= 0; index -= 1) {
         const key = window.localStorage.key(index);
-        if (key?.startsWith("offrely")) {
+        if (key?.startsWith("dealyva") || key?.startsWith("offrely")) {
           window.localStorage.removeItem(key);
         }
       }

@@ -6,7 +6,7 @@ import { BrowserRouter } from "react-router-dom";
 import App from "../src/App";
 import { AppProvider } from "../src/context/AppContext";
 
-export default function OffrelyClient() {
+export default function DealyvaClient() {
   const mounted = useSyncExternalStore(
     () => () => undefined,
     () => true,
@@ -16,7 +16,7 @@ export default function OffrelyClient() {
   if (!mounted) {
     return (
       <div role="status" aria-live="polite">
-        Chargement d’Offrely…
+        Chargement de Dealyva…
       </div>
     );
   }

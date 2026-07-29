@@ -238,13 +238,13 @@ export default function HomePage() {
               <span className="live-dot" /> Votre sélection, au meilleur prix
             </span>
             <h1>
-              Ce que vous aimez,
+              Les meilleurs deals,
               <br />
-              <em>moins cher.</em>
+              <em>partout.</em>
             </h1>
             <p>
-              Offrely rassemble les promotions en ligne des marques qui comptent
-              pour vous. Un flux plus simple, sans publicité ni contenu sponsorisé.
+              Dealyva rassemble les meilleures promotions en ligne, partout.
+              Un flux simple, clair et personnalisé.
             </p>
             <label className="hero-search">
               <Search size={21} aria-hidden="true" />
@@ -279,7 +279,7 @@ export default function HomePage() {
               />
               <span>
                 <CheckCircle2 size={16} />
-                Gratuit, indépendant, sans affiliation
+                Gratuit, indépendant et transparent
               </span>
             </div>
             <div className="last-update">
@@ -332,7 +332,7 @@ export default function HomePage() {
                 <p>
                   {initialLoading
                     ? "Recherche des meilleures opportunités…"
-                    : `${filteredPromotions.length} offre${filteredPromotions.length > 1 ? "s" : ""} de démonstration`}
+                    : `${filteredPromotions.length} offre${filteredPromotions.length > 1 ? "s" : ""} active${filteredPromotions.length > 1 ? "s" : ""}`}
                 </p>
               </div>
               <div className="results-controls">
@@ -433,7 +433,7 @@ export default function HomePage() {
                     <h3>Cette sélection est un peu trop précise.</h3>
                     <p>
                       Élargissez votre recherche ou réinitialisez les filtres pour
-                      retrouver nos offres de démonstration.
+                      retrouver les offres du catalogue.
                     </p>
                     <button
                       type="button"
@@ -485,10 +485,10 @@ export default function HomePage() {
             <div>
               <Clock3 size={20} />
               <span>
-                <strong>Des promotions fictives, une expérience bien réelle.</strong>
+                <strong>Des offres partenaires ou de démonstration, toujours identifiées.</strong>
                 <small>
-                  Ce prototype n’utilise ni affiliation, ni publicité, ni données
-                  marchandes en direct.
+                  Les liens d’affiliation et les données fictives sont signalés
+                  clairement.
                 </small>
               </span>
             </div>
