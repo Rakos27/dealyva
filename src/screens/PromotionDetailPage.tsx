@@ -8,6 +8,7 @@ import {
   ExternalLink,
   Heart,
   Info,
+  MessageSquareWarning,
   ShieldCheck,
   Share2,
   Store,
@@ -16,9 +17,11 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { AdSlot, adSenseSlots } from "../components/AdSense";
+import { OfferTrustPanel } from "../components/OfferTrustPanel";
 import { PromotionCard } from "../components/PromotionCard";
 import { useApp } from "../context/AppContext";
 import { daysUntil, formatDate, formatPrice } from "../lib/format";
+import { getOfferReportUrl } from "../lib/trust";
 
 export default function PromotionDetailPage() {
   const { id } = useParams();
@@ -88,6 +91,7 @@ export default function PromotionDetailPage() {
   const saved = favorites.includes(promotion.id);
   const expired = promotion.isExpired || daysUntil(promotion.expiresAt) < 0;
   const isPartner = promotion.source === "awin";
+  const isDemo = promotion.source === "demo";
   const hasPrice = promotion.currentPrice > 0;
 
   const copyCode = async () => {
@@ -129,7 +133,9 @@ export default function PromotionDetailPage() {
           <span>/</span>
           <Link to={`/?categorie=${promotion.category}`}>{promotion.category}</Link>
           <span>/</span>
-          <span aria-current="page">{promotion.brand}</span>
+          <Link to={`/marque/${promotion.brandId}`}>{promotion.brand}</Link>
+          <span>/</span>
+          <span aria-current="page">{promotion.title}</span>
         </nav>
         <button className="back-link" type="button" onClick={() => navigate(-1)}>
           <ArrowLeft size={16} /> Retour
@@ -138,10 +144,13 @@ export default function PromotionDetailPage() {
         <section
           className={`offer-detail ${expired ? "offer-detail--expired" : ""}${
             isPartner ? " offer-detail--partner" : ""
-          }`}
+          }${isDemo ? " offer-detail--demo" : ""}`}
         >
           <div className="offer-detail__media">
             <img src={promotion.image} alt={promotion.title} />
+            {isDemo && (
+              <span className="demo-badge">Démonstration fictive</span>
+            )}
             <div className="offer-detail__media-top">
               {promotion.discount > 0 && (
                 <span className="discount-badge discount-badge--large">
@@ -205,9 +214,13 @@ export default function PromotionDetailPage() {
                 <ShieldCheck size={18} />
                 <span>
                   <small>
-                    Dernière synchronisation Awin
+                    {isDemo
+                      ? "Données de démonstration"
+                      : "Dernière synchronisation Awin"}
                   </small>
-                  <strong>{formatDate(promotion.verifiedAt)}</strong>
+                  <strong>
+                    {isDemo ? "Aucune donnée commerciale" : formatDate(promotion.verifiedAt)}
+                  </strong>
                 </span>
               </span>
             </div>
@@ -223,6 +236,20 @@ export default function PromotionDetailPage() {
                   Voir l’offre chez {promotion.brand}
                   <ExternalLink size={17} />
                 </a>
+              ) : isDemo && !expired ? (
+                <button
+                  type="button"
+                  className="button button--primary button--large"
+                  onClick={() =>
+                    showToast(
+                      "Démonstration : aucun achat réel n’est effectué.",
+                      "success",
+                    )
+                  }
+                >
+                  Tester le bouton (démo)
+                  <ExternalLink size={17} />
+                </button>
               ) : (
                 <button
                   type="button"
@@ -253,10 +280,9 @@ export default function PromotionDetailPage() {
             <div className="affiliate-callout">
               <Info size={17} />
               <p>
-                Offre transmise par Awin et vérifiée lors de la dernière
-                synchronisation. Les conditions finales sont celles affichées
-                sur le site du marchand. Ce lien peut rémunérer Dealyva sans
-                modifier votre prix.
+                {isDemo
+                  ? "Annonce entièrement fictive créée pour tester le fonctionnement de Dealyva. Aucun marchand, partenariat, produit ou achat réel n’est associé à cette fiche."
+                  : "Offre transmise par Awin et vérifiée lors de la dernière synchronisation. Les conditions finales sont celles affichées sur le site du marchand. Ce lien peut rémunérer Dealyva sans modifier votre prix."}
               </p>
             </div>
           </div>
@@ -276,13 +302,37 @@ export default function PromotionDetailPage() {
             ))}
           </ul>
           <div className="merchant-note">
-            <strong>Avant de poursuivre</strong>
+            <strong>{isDemo ? "À propos de cette fiche" : "Avant de poursuivre"}</strong>
             <p>
-              Vérifiez le prix, la disponibilité et toutes les conditions
-              directement sur le site du marchand avant votre achat.
+              {isDemo
+                ? "Les prix, remises, codes et dates sont simulés. Cette fiche ne permet aucun achat et disparaîtra lorsque les premières offres partenaires seront publiées."
+                : "Vérifiez le prix, la disponibilité et toutes les conditions directement sur le site du marchand avant votre achat."}
             </p>
           </div>
         </section>
+
+        <OfferTrustPanel promotion={promotion} />
+
+        {!isDemo && <aside className="offer-report">
+          <div>
+            <MessageSquareWarning aria-hidden="true" size={19} />
+            <span>
+              <strong>Une information semble incorrecte ?</strong>
+              <small>
+                Signalez une offre expirée, un code invalide ou une condition
+                manquante.
+              </small>
+            </span>
+          </div>
+          <a
+            className="button button--outline"
+            href={getOfferReportUrl(promotion)}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Signaler cette offre
+          </a>
+        </aside>}
 
         <AdSlot slot={adSenseSlots.detail} placement="detail" />
 

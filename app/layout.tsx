@@ -7,7 +7,7 @@ import "../src/styles.css";
 export const metadata = {
   title: "Promotions — Dealyva",
   description:
-    "Dealyva rassemble les meilleures promotions en ligne, partout.",
+    "Dealyva rassemble des promotions partenaires vérifiées et explique clairement son modèle d’affiliation.",
   icons: {
     icon: "/brand/dealyva-logo-carre.svg",
   },

@@ -3,6 +3,7 @@ import {
   CheckCircle2,
   ChevronDown,
   Clock3,
+  FlaskConical,
   RefreshCw,
   Search,
   SlidersHorizontal,
@@ -210,6 +211,9 @@ export default function HomePage() {
 
   const heroDeal =
     livePromotions.find((promotion) => promotion.isNew) ?? livePromotions[0];
+  const isDemoCatalog =
+    promotions.length > 0 &&
+    promotions.every((promotion) => promotion.source === "demo");
 
   const handleRefresh = async () => {
     setError("");
@@ -277,7 +281,9 @@ export default function HomePage() {
               )}
               <span>
                 <CheckCircle2 size={16} />
-                Offres partenaires Awin
+                {isDemoCatalog
+                  ? "Catalogue de démonstration"
+                  : "Offres partenaires Awin"}
               </span>
             </div>
             <div className="last-update">
@@ -334,6 +340,22 @@ export default function HomePage() {
       </section>
 
       <main>
+        {isDemoCatalog && (
+          <div className="container demo-catalog-banner">
+            <aside className="demo-notice" aria-labelledby="demo-mode-title">
+              <FlaskConical size={24} aria-hidden="true" />
+              <div>
+                <h2 id="demo-mode-title">Mode démonstration actif</h2>
+                <p>
+                  Ces marques, prix, codes et promotions sont fictifs. Ils
+                  permettent de tester la recherche, les filtres, les favoris
+                  et les fiches avant l’arrivée des premières offres réelles.
+                </p>
+              </div>
+              <span className="demo-badge">Aucun achat réel</span>
+            </aside>
+          </div>
+        )}
         <AdSlot slot={adSenseSlots.homeTop} placement="home-top" />
         <section className="promotions-section" id="promotions">
           <div className="container">
@@ -344,7 +366,7 @@ export default function HomePage() {
                 <p>
                   {isFeedLoading
                     ? "Recherche des meilleures opportunités…"
-                    : `${filteredPromotions.length} offre${filteredPromotions.length !== 1 ? "s" : ""} partenaire${filteredPromotions.length !== 1 ? "s" : ""}`}
+                    : `${filteredPromotions.length} offre${filteredPromotions.length !== 1 ? "s" : ""} ${isDemoCatalog ? "de démonstration" : `partenaire${filteredPromotions.length !== 1 ? "s" : ""}`}`}
                 </p>
               </div>
               {livePromotions.length > 0 && (
@@ -531,9 +553,15 @@ export default function HomePage() {
             <div>
               <Clock3 size={20} />
               <span>
-                <strong>Des offres partenaires, clairement identifiées.</strong>
+                <strong>
+                  {isDemoCatalog
+                    ? "Des scénarios fictifs, clairement identifiés."
+                    : "Des offres partenaires, clairement identifiées."}
+                </strong>
                 <small>
-                  Dealyva peut percevoir une commission, sans surcoût pour vous.
+                  {isDemoCatalog
+                    ? "Aucun achat, partenariat ou revenu d’affiliation dans ce catalogue."
+                    : "Dealyva peut percevoir une commission, sans surcoût pour vous."}
                 </small>
               </span>
             </div>

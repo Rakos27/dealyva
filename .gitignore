@@ -10,4 +10,7 @@ dist-static/
 playwright-report/
 test-results/
 public/ads.txt
+public/robots.txt
+public/sitemap.xml
+data/awin-candidates.json
 .DS_Store

@@ -7,6 +7,7 @@ import {
   Tags,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { AnimatedNumber } from "../components/AnimatedNumber";
 import { useApp } from "../context/AppContext";
 
 export function CategoriesPage() {
@@ -49,6 +50,9 @@ export function CategoriesPage() {
   const representedCategories = categories.filter(
     (category) => (categoryStats.get(category.id)?.offerCount ?? 0) > 0,
   ).length;
+  const isDemoCatalog =
+    promotions.length > 0 &&
+    promotions.every((promotion) => promotion.source === "demo");
 
   return (
     <main className="page-shell catalog-page categories-page">
@@ -68,15 +72,15 @@ export function CategoriesPage() {
         <dl className="catalog-hero__stats" aria-label="Aperçu des catégories">
           <div>
             <dt>Univers</dt>
-            <dd>{categories.length}</dd>
+            <dd><AnimatedNumber value={categories.length} /></dd>
           </div>
           <div>
             <dt>Univers avec des offres</dt>
-            <dd>{representedCategories}</dd>
+            <dd><AnimatedNumber value={representedCategories} /></dd>
           </div>
           <div>
             <dt>Offres en cours</dt>
-            <dd>{activePromotions.length}</dd>
+            <dd><AnimatedNumber value={activePromotions.length} /></dd>
           </div>
         </dl>
       </section>
@@ -179,8 +183,9 @@ export function CategoriesPage() {
         <div>
           <h2>Un catalogue vivant et transparent</h2>
           <p>
-            Les promotions sont synchronisées via Awin auprès d’annonceurs
-            approuvés. Les conditions finales restent celles du marchand.
+            {isDemoCatalog
+              ? "Les offres actuellement affichées sont fictives et servent uniquement à tester l’interface. Elles seront remplacées par les promotions d’annonceurs approuvés."
+              : "Les promotions sont synchronisées via Awin auprès d’annonceurs approuvés. Les conditions finales restent celles du marchand."}
           </p>
         </div>
         <Link className="text-link" to="/">

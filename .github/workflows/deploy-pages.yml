@@ -26,6 +26,16 @@ jobs:
       VITE_ADSENSE_SLOT_HOME_TOP: ${{ vars.ADSENSE_SLOT_HOME_TOP }}
       VITE_ADSENSE_SLOT_HOME_INLINE: ${{ vars.ADSENSE_SLOT_HOME_INLINE }}
       VITE_ADSENSE_SLOT_DETAIL: ${{ vars.ADSENSE_SLOT_DETAIL }}
+      VITE_ENABLE_DEMO_OFFERS: ${{ vars.ENABLE_DEMO_OFFERS }}
+      VITE_PUBLIC_SITE_URL: ${{ vars.PUBLIC_SITE_URL }}
+      VITE_LEGAL_PUBLISHER_NAME: ${{ vars.LEGAL_PUBLISHER_NAME }}
+      VITE_LEGAL_PUBLISHER_STATUS: ${{ vars.LEGAL_PUBLISHER_STATUS }}
+      VITE_LEGAL_PUBLISHER_ADDRESS: ${{ vars.LEGAL_PUBLISHER_ADDRESS }}
+      VITE_LEGAL_PUBLICATION_DIRECTOR: ${{ vars.LEGAL_PUBLICATION_DIRECTOR }}
+      VITE_LEGAL_CONTACT_EMAIL: ${{ vars.LEGAL_CONTACT_EMAIL }}
+      VITE_LEGAL_CONTACT_PHONE: ${{ vars.LEGAL_CONTACT_PHONE }}
+      VITE_LEGAL_REGISTRATION_NUMBER: ${{ vars.LEGAL_REGISTRATION_NUMBER }}
+      VITE_LEGAL_VAT_NUMBER: ${{ vars.LEGAL_VAT_NUMBER }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -43,11 +53,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Synchronize approved Awin offers
+      - name: Synchronize and publish manually approved Awin offers
         if: ${{ env.AWIN_ACCESS_TOKEN != '' && env.AWIN_PUBLISHER_ID != '' }}
         run: npm run awin:sync
 
       - name: Build static site
+        env:
+          ROUTER_MODE: hash
         run: npm run build:pages
 
       - name: Configure Pages

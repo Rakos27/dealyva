@@ -47,7 +47,7 @@ export interface Promotion {
   onlineOnly: boolean;
   terms: string[];
   tags: string[];
-  source?: "awin";
+  source?: "awin" | "demo";
   sourceId?: string;
   affiliateUrl?: string;
   offerType?: "promotion" | "voucher";

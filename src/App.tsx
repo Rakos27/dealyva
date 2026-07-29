@@ -1,39 +1,28 @@
-import { useEffect } from "react";
 import { Link, Outlet, Route, Routes, useLocation } from "react-router-dom";
 import { AdSenseProvider } from "./components/AdSense";
 import { Footer } from "./components/Footer";
 import { Header } from "./components/Header";
+import { MotionController } from "./components/MotionController";
+import { SeoMetadata } from "./components/SeoMetadata";
 import { ScrollToTop } from "./components/ScrollToTop";
 import { ToastRegion } from "./components/ToastRegion";
+import BrandDetailPage from "./screens/BrandDetailPage";
 import BrandsPage from "./screens/BrandsPage";
 import CategoriesPage from "./screens/CategoriesPage";
+import CookiesPage from "./screens/CookiesPage";
+import FaqPage from "./screens/FaqPage";
 import FavoritesPage from "./screens/FavoritesPage";
 import HomePage from "./screens/HomePage";
+import HowItWorksPage from "./screens/HowItWorksPage";
 import LegalPage from "./screens/LegalPage";
+import AboutPage from "./screens/AboutPage";
+import PrivacyPage from "./screens/PrivacyPage";
 import PromotionDetailPage from "./screens/PromotionDetailPage";
-
-const pageTitles: Record<string, string> = {
-  "/": "Promotions",
-  "/marques": "Marques",
-  "/categories": "Catégories",
-  "/favoris": "Mes favoris",
-  "/mentions-legales": "Mentions légales et confidentialité",
-};
-
-function RouteMetadata() {
-  const { pathname } = useLocation();
-
-  useEffect(() => {
-    const title = pathname.startsWith("/offre/")
-      ? "Détail de l’offre"
-      : (pageTitles[pathname] ?? "Page introuvable");
-    document.title = `${title} — Dealyva`;
-  }, [pathname]);
-
-  return null;
-}
+import TermsPage from "./screens/TermsPage";
 
 function PublicLayout() {
+  const { pathname } = useLocation();
+
   return (
     <>
       <a href="#main-content" className="skip-link">
@@ -41,7 +30,10 @@ function PublicLayout() {
       </a>
       <Header />
       <div id="main-content">
-        <Outlet />
+        <MotionController />
+        <div className="route-stage" key={pathname}>
+          <Outlet />
+        </div>
       </div>
       <Footer />
     </>
@@ -66,17 +58,24 @@ function NotFoundPage() {
 export default function App() {
   return (
     <>
-      <RouteMetadata />
+      <SeoMetadata />
       <AdSenseProvider />
       <ScrollToTop />
       <Routes>
         <Route element={<PublicLayout />}>
           <Route index element={<HomePage />} />
           <Route path="marques" element={<BrandsPage />} />
+          <Route path="marque/:brandId" element={<BrandDetailPage />} />
           <Route path="categories" element={<CategoriesPage />} />
           <Route path="favoris" element={<FavoritesPage />} />
           <Route path="offre/:id" element={<PromotionDetailPage />} />
+          <Route path="a-propos" element={<AboutPage />} />
+          <Route path="comment-ca-marche" element={<HowItWorksPage />} />
+          <Route path="faq" element={<FaqPage />} />
           <Route path="mentions-legales" element={<LegalPage />} />
+          <Route path="conditions-utilisation" element={<TermsPage />} />
+          <Route path="confidentialite" element={<PrivacyPage />} />
+          <Route path="cookies" element={<CookiesPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ArrowUpRight,
   Check,
@@ -10,6 +10,7 @@ import {
 import { Link } from "react-router-dom";
 import type { Promotion } from "../types";
 import { daysUntil, formatDate, formatPrice } from "../lib/format";
+import { getOfferTrust } from "../lib/trust";
 import { useApp } from "../context/AppContext";
 
 interface PromotionCardProps {
@@ -25,11 +26,45 @@ export function PromotionCard({
 }: PromotionCardProps) {
   const { favorites, toggleFavorite, showToast } = useApp();
   const [copied, setCopied] = useState(false);
+  const [favoriteBurst, setFavoriteBurst] = useState(false);
+  const favoriteTimer = useRef<number | null>(null);
+  const copyTimer = useRef<number | null>(null);
   const saved = favorites.includes(promotion.id);
   const remainingDays = daysUntil(promotion.expiresAt);
   const expired = promotion.isExpired || remainingDays < 0;
   const isPartner = promotion.source === "awin";
+  const isDemo = promotion.source === "demo";
   const hasPrice = promotion.currentPrice > 0;
+  const trust = getOfferTrust(promotion);
+
+  useEffect(
+    () => () => {
+      if (favoriteTimer.current !== null) {
+        window.clearTimeout(favoriteTimer.current);
+      }
+      if (copyTimer.current !== null) {
+        window.clearTimeout(copyTimer.current);
+      }
+    },
+    [],
+  );
+
+  const updateFavorite = () => {
+    const willSave = !saved;
+    toggleFavorite(promotion.id);
+
+    if (willSave) {
+      setFavoriteBurst(false);
+      window.requestAnimationFrame(() => setFavoriteBurst(true));
+      if (favoriteTimer.current !== null) {
+        window.clearTimeout(favoriteTimer.current);
+      }
+      favoriteTimer.current = window.setTimeout(
+        () => setFavoriteBurst(false),
+        620,
+      );
+    }
+  };
 
   const copyCode = async () => {
     if (!promotion.promoCode) return;
@@ -37,7 +72,10 @@ export function PromotionCard({
       await navigator.clipboard.writeText(promotion.promoCode);
       setCopied(true);
       showToast(`Code ${promotion.promoCode} copié`, "success");
-      window.setTimeout(() => setCopied(false), 1800);
+      if (copyTimer.current !== null) {
+        window.clearTimeout(copyTimer.current);
+      }
+      copyTimer.current = window.setTimeout(() => setCopied(false), 1800);
     } catch {
       showToast(`Code : ${promotion.promoCode}`);
     }
@@ -69,6 +107,7 @@ export function PromotionCard({
         expired ? "promotion-card--expired" : "",
         saved ? "promotion-card--saved" : "",
         isPartner ? "promotion-card--partner" : "",
+        isDemo ? "promotion-card--demo" : "",
       ]
         .filter(Boolean)
         .join(" ")}
@@ -77,6 +116,11 @@ export function PromotionCard({
         <Link to={`/offre/${promotion.id}`} aria-label={`Voir ${promotion.title}`}>
           <img src={promotion.image} alt="" loading="lazy" />
         </Link>
+        {isDemo && (
+          <span className="demo-badge demo-badge--compact">
+            Démonstration
+          </span>
+        )}
         <div className="promotion-card__badges">
           {promotion.discount > 0 && (
             <span className="discount-badge">−{promotion.discount}%</span>
@@ -88,8 +132,14 @@ export function PromotionCard({
         <div className="promotion-card__quick-actions">
           <button
             type="button"
-            className={`card-icon-button ${saved ? "is-active" : ""}`}
-            onClick={() => toggleFavorite(promotion.id)}
+            className={[
+              "card-icon-button",
+              saved ? "is-active" : "",
+              favoriteBurst ? "is-celebrating" : "",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+            onClick={updateFavorite}
             aria-label={saved ? "Retirer des favoris" : "Ajouter aux favoris"}
             aria-pressed={saved}
           >
@@ -108,7 +158,13 @@ export function PromotionCard({
       <div className="promotion-card__body">
         {reason && <p className="recommendation-reason">{reason}</p>}
         <div className="promotion-card__meta">
-          <span className="brand-label">{promotion.brand}</span>
+          <Link
+            className="brand-label"
+            to={`/marque/${promotion.brandId}`}
+            aria-label={`Voir la page ${promotion.brand}`}
+          >
+            {promotion.brand}
+          </Link>
           <span>chez {promotion.merchant}</span>
         </div>
         <Link to={`/offre/${promotion.id}`} className="promotion-card__title">
@@ -121,32 +177,45 @@ export function PromotionCard({
             <span className="saving">Économisez {formatPrice(promotion.savings)}</span>
           </div>
         ) : (
-          isPartner && (
+          (isPartner || isDemo) && (
             <p className="promotion-card__partner-note">
-              Offre vérifiée auprès du partenaire
+              {isDemo
+                ? "Scénario fictif pour tester Dealyva"
+                : "Offre vérifiée auprès du partenaire"}
             </p>
           )
         )}
         {promotion.promoCode && !expired && (
-          <button type="button" className="promo-code" onClick={copyCode}>
+          <button
+            type="button"
+            className={`promo-code${copied ? " is-copied" : ""}`}
+            onClick={copyCode}
+          >
             <span>
-              <small>Code</small>
+              <small>{copied ? "Copié" : "Code"}</small>
               <strong>{promotion.promoCode}</strong>
             </span>
             {copied ? <Check size={16} /> : <Copy size={16} />}
           </button>
         )}
         <div className="promotion-card__footer">
-          <span className={remainingDays <= 3 && !expired ? "is-urgent" : ""}>
-            <Clock3 size={14} aria-hidden="true" />
-            {expired
-              ? `Expirée le ${formatDate(promotion.expiresAt)}`
-              : remainingDays === 0
-                ? "Se termine aujourd’hui"
-                : remainingDays === 1
-                  ? "Plus qu’un jour"
-                  : `Jusqu’au ${formatDate(promotion.expiresAt, { year: undefined })}`}
-          </span>
+          <div className="promotion-card__status">
+            <span className={remainingDays <= 3 && !expired ? "is-urgent" : ""}>
+              <Clock3 size={14} aria-hidden="true" />
+              {expired
+                ? `Expirée le ${formatDate(promotion.expiresAt)}`
+                : remainingDays === 0
+                  ? "Se termine aujourd’hui"
+                  : remainingDays === 1
+                    ? "Plus qu’un jour"
+                    : `Jusqu’au ${formatDate(promotion.expiresAt, { year: undefined })}`}
+            </span>
+            {!expired && (
+              <small className={trust.recent ? "is-verified" : "is-warning"}>
+                {trust.verifiedLabel}
+              </small>
+            )}
+          </div>
           <Link
             to={`/offre/${promotion.id}`}
             className={`card-cta ${expired ? "is-disabled" : ""}`}

@@ -1,16 +1,23 @@
-import { mkdir, rename, rm, writeFile } from "node:fs/promises";
-import { dirname, resolve } from "node:path";
+import {
+  DEFAULT_CANDIDATES_PATH,
+  DEFAULT_MODERATION_PATH,
+  DEFAULT_PUBLIC_FEED_PATH,
+  publishApprovedOffers,
+  writeJsonAtomic,
+} from "./lib/awin-moderation.mjs";
 
 const API_BASE_URL = "https://api.awin.com";
-const DEFAULT_OUTPUT_PATH = "public/data/promotions.json";
 const PAGE_SIZE = 200;
 
 const token = process.env.AWIN_ACCESS_TOKEN?.trim();
 const publisherId = process.env.AWIN_PUBLISHER_ID?.trim();
 const membership = process.env.AWIN_MEMBERSHIP?.trim() || "joined";
-const outputPath = resolve(
-  process.env.AWIN_OUTPUT_PATH?.trim() || DEFAULT_OUTPUT_PATH,
-);
+const candidatesPath =
+  process.env.AWIN_CANDIDATES_PATH?.trim() || DEFAULT_CANDIDATES_PATH;
+const moderationPath =
+  process.env.AWIN_MODERATION_PATH?.trim() || DEFAULT_MODERATION_PATH;
+const outputPath =
+  process.env.AWIN_OUTPUT_PATH?.trim() || DEFAULT_PUBLIC_FEED_PATH;
 
 if (!token || !publisherId) {
   console.error(
@@ -323,8 +330,9 @@ const promotions = [
   );
 
 const feed = {
-  version: 1,
+  version: 2,
   source: "awin",
+  moderation: "pending-review",
   membership,
   publisherId,
   generatedAt: nowIso,
@@ -333,21 +341,20 @@ const feed = {
   promotions,
 };
 
-await mkdir(dirname(outputPath), { recursive: true });
-const temporaryOutputPath = `${outputPath}.${process.pid}.tmp`;
-
-try {
-  await writeFile(
-    temporaryOutputPath,
-    `${JSON.stringify(feed, null, 2)}\n`,
-    "utf8",
-  );
-  await rename(temporaryOutputPath, outputPath);
-} finally {
-  await rm(temporaryOutputPath, { force: true });
-}
+await writeJsonAtomic(candidatesPath, feed);
+const { counts, publicFeed } = await publishApprovedOffers({
+  candidatesPath,
+  moderationPath,
+  outputPath,
+});
 
 console.log(
-  `Synchronisation Awin terminée : ${promotions.length} offre(s), ${programmes.length} programme(s), mode ${membership}.`,
+  `Synchronisation Awin terminée : ${promotions.length} candidate(s), ${programmes.length} programme(s), mode ${membership}.`,
 );
-console.log(`Flux écrit dans ${outputPath}`);
+console.log(
+  `${counts.approved} approuvée(s), ${counts.pending} en attente, ${counts.rejected} refusée(s).`,
+);
+console.log(`File d’attente écrite dans ${candidatesPath}`);
+console.log(
+  `Flux public écrit dans ${outputPath} avec ${publicFeed.offerCount} offre(s).`,
+);

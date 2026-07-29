@@ -8,6 +8,7 @@ import {
   X,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { AnimatedNumber } from "../components/AnimatedNumber";
 import { useApp } from "../context/AppContext";
 
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
@@ -28,6 +29,9 @@ export function BrandsPage() {
   } = useApp();
   const [query, setQuery] = useState("");
   const [activeLetter, setActiveLetter] = useState<string | null>(null);
+  const isDemoCatalog =
+    promotions.length > 0 &&
+    promotions.every((promotion) => promotion.source === "demo");
 
   const selectedBrandIds = useMemo(
     () => new Set(selectedBrands),
@@ -112,32 +116,35 @@ export function BrandsPage() {
         <div className="catalog-hero__content">
           <p className="eyebrow">
             <Sparkles aria-hidden="true" size={16} />
-            Annonceurs partenaires
+            {isDemoCatalog ? "Marques fictives de démonstration" : "Annonceurs partenaires"}
           </p>
           <h1 id="brands-title">Vos marques, vos réductions.</h1>
           <p className="catalog-hero__intro">
-            Composez votre sélection pour retrouver en un instant les offres
-            qui comptent vraiment pour vous.
+            {isDemoCatalog
+              ? "Testez la recherche, l’alphabet et votre sélection avec des marques clairement fictives."
+              : "Composez votre sélection pour retrouver en un instant les offres qui comptent vraiment pour vous."}
           </p>
         </div>
 
         <dl className="catalog-hero__stats" aria-label="Aperçu du catalogue">
           <div>
             <dt>Marques</dt>
-            <dd>{brands.length}</dd>
+            <dd><AnimatedNumber value={brands.length} /></dd>
           </div>
           <div>
             <dt>Offres en cours</dt>
             <dd>
-              {
-                promotions.filter((promotion) => !promotion.isExpired)
-                  .length
-              }
+              <AnimatedNumber
+                value={
+                  promotions.filter((promotion) => !promotion.isExpired)
+                    .length
+                }
+              />
             </dd>
           </div>
           <div>
             <dt>Dans votre sélection</dt>
-            <dd>{selectedBrands.length}</dd>
+            <dd><AnimatedNumber value={selectedBrands.length} /></dd>
           </div>
         </dl>
       </section>
@@ -329,10 +336,10 @@ export function BrandsPage() {
 
                   <Link
                     className="brand-catalog-card__link"
-                    to={`/?marque=${brand.id}`}
-                    aria-label={`Voir les offres ${brand.name}`}
+                    to={`/marque/${brand.id}`}
+                    aria-label={`Découvrir la page ${brand.name}`}
                   >
-                    Voir les offres
+                    Découvrir la marque
                     <ArrowRight aria-hidden="true" size={16} />
                   </Link>
                 </article>
