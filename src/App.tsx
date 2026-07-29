@@ -1,10 +1,11 @@
-import { useEffect } from "react";
-import { Link, Outlet, Route, Routes, useLocation } from "react-router-dom";
+import { Link, Outlet, Route, Routes } from "react-router-dom";
 import { AdSenseProvider } from "./components/AdSense";
 import { Footer } from "./components/Footer";
 import { Header } from "./components/Header";
+import { SeoMetadata } from "./components/SeoMetadata";
 import { ScrollToTop } from "./components/ScrollToTop";
 import { ToastRegion } from "./components/ToastRegion";
+import BrandDetailPage from "./screens/BrandDetailPage";
 import BrandsPage from "./screens/BrandsPage";
 import CategoriesPage from "./screens/CategoriesPage";
 import CookiesPage from "./screens/CookiesPage";
@@ -17,33 +18,6 @@ import AboutPage from "./screens/AboutPage";
 import PrivacyPage from "./screens/PrivacyPage";
 import PromotionDetailPage from "./screens/PromotionDetailPage";
 import TermsPage from "./screens/TermsPage";
-
-const pageTitles: Record<string, string> = {
-  "/": "Promotions",
-  "/marques": "Marques",
-  "/categories": "Catégories",
-  "/favoris": "Mes favoris",
-  "/a-propos": "À propos",
-  "/comment-ca-marche": "Comment ça marche",
-  "/faq": "Questions fréquentes",
-  "/mentions-legales": "Mentions légales",
-  "/conditions-utilisation": "Conditions d’utilisation",
-  "/confidentialite": "Politique de confidentialité",
-  "/cookies": "Cookies et traceurs",
-};
-
-function RouteMetadata() {
-  const { pathname } = useLocation();
-
-  useEffect(() => {
-    const title = pathname.startsWith("/offre/")
-      ? "Détail de l’offre"
-      : (pageTitles[pathname] ?? "Page introuvable");
-    document.title = `${title} — Dealyva`;
-  }, [pathname]);
-
-  return null;
-}
 
 function PublicLayout() {
   return (
@@ -78,13 +52,14 @@ function NotFoundPage() {
 export default function App() {
   return (
     <>
-      <RouteMetadata />
+      <SeoMetadata />
       <AdSenseProvider />
       <ScrollToTop />
       <Routes>
         <Route element={<PublicLayout />}>
           <Route index element={<HomePage />} />
           <Route path="marques" element={<BrandsPage />} />
+          <Route path="marque/:brandId" element={<BrandDetailPage />} />
           <Route path="categories" element={<CategoriesPage />} />
           <Route path="favoris" element={<FavoritesPage />} />
           <Route path="offre/:id" element={<PromotionDetailPage />} />

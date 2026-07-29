@@ -8,6 +8,7 @@ import {
   ExternalLink,
   Heart,
   Info,
+  MessageSquareWarning,
   ShieldCheck,
   Share2,
   Store,
@@ -16,9 +17,11 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { AdSlot, adSenseSlots } from "../components/AdSense";
+import { OfferTrustPanel } from "../components/OfferTrustPanel";
 import { PromotionCard } from "../components/PromotionCard";
 import { useApp } from "../context/AppContext";
 import { daysUntil, formatDate, formatPrice } from "../lib/format";
+import { getOfferReportUrl } from "../lib/trust";
 
 export default function PromotionDetailPage() {
   const { id } = useParams();
@@ -129,7 +132,9 @@ export default function PromotionDetailPage() {
           <span>/</span>
           <Link to={`/?categorie=${promotion.category}`}>{promotion.category}</Link>
           <span>/</span>
-          <span aria-current="page">{promotion.brand}</span>
+          <Link to={`/marque/${promotion.brandId}`}>{promotion.brand}</Link>
+          <span>/</span>
+          <span aria-current="page">{promotion.title}</span>
         </nav>
         <button className="back-link" type="button" onClick={() => navigate(-1)}>
           <ArrowLeft size={16} /> Retour
@@ -283,6 +288,29 @@ export default function PromotionDetailPage() {
             </p>
           </div>
         </section>
+
+        <OfferTrustPanel promotion={promotion} />
+
+        <aside className="offer-report">
+          <div>
+            <MessageSquareWarning aria-hidden="true" size={19} />
+            <span>
+              <strong>Une information semble incorrecte ?</strong>
+              <small>
+                Signalez une offre expirée, un code invalide ou une condition
+                manquante.
+              </small>
+            </span>
+          </div>
+          <a
+            className="button button--outline"
+            href={getOfferReportUrl(promotion)}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Signaler cette offre
+          </a>
+        </aside>
 
         <AdSlot slot={adSenseSlots.detail} placement="detail" />
 

@@ -329,10 +329,10 @@ export function BrandsPage() {
 
                   <Link
                     className="brand-catalog-card__link"
-                    to={`/?marque=${brand.id}`}
-                    aria-label={`Voir les offres ${brand.name}`}
+                    to={`/marque/${brand.id}`}
+                    aria-label={`Découvrir la page ${brand.name}`}
                   >
-                    Voir les offres
+                    Découvrir la marque
                     <ArrowRight aria-hidden="true" size={16} />
                   </Link>
                 </article>

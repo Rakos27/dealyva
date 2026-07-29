@@ -10,6 +10,7 @@ import {
 import { Link } from "react-router-dom";
 import type { Promotion } from "../types";
 import { daysUntil, formatDate, formatPrice } from "../lib/format";
+import { getOfferTrust } from "../lib/trust";
 import { useApp } from "../context/AppContext";
 
 interface PromotionCardProps {
@@ -30,6 +31,7 @@ export function PromotionCard({
   const expired = promotion.isExpired || remainingDays < 0;
   const isPartner = promotion.source === "awin";
   const hasPrice = promotion.currentPrice > 0;
+  const trust = getOfferTrust(promotion);
 
   const copyCode = async () => {
     if (!promotion.promoCode) return;
@@ -108,7 +110,13 @@ export function PromotionCard({
       <div className="promotion-card__body">
         {reason && <p className="recommendation-reason">{reason}</p>}
         <div className="promotion-card__meta">
-          <span className="brand-label">{promotion.brand}</span>
+          <Link
+            className="brand-label"
+            to={`/marque/${promotion.brandId}`}
+            aria-label={`Voir la page ${promotion.brand}`}
+          >
+            {promotion.brand}
+          </Link>
           <span>chez {promotion.merchant}</span>
         </div>
         <Link to={`/offre/${promotion.id}`} className="promotion-card__title">
@@ -137,16 +145,23 @@ export function PromotionCard({
           </button>
         )}
         <div className="promotion-card__footer">
-          <span className={remainingDays <= 3 && !expired ? "is-urgent" : ""}>
-            <Clock3 size={14} aria-hidden="true" />
-            {expired
-              ? `Expirée le ${formatDate(promotion.expiresAt)}`
-              : remainingDays === 0
-                ? "Se termine aujourd’hui"
-                : remainingDays === 1
-                  ? "Plus qu’un jour"
-                  : `Jusqu’au ${formatDate(promotion.expiresAt, { year: undefined })}`}
-          </span>
+          <div className="promotion-card__status">
+            <span className={remainingDays <= 3 && !expired ? "is-urgent" : ""}>
+              <Clock3 size={14} aria-hidden="true" />
+              {expired
+                ? `Expirée le ${formatDate(promotion.expiresAt)}`
+                : remainingDays === 0
+                  ? "Se termine aujourd’hui"
+                  : remainingDays === 1
+                    ? "Plus qu’un jour"
+                    : `Jusqu’au ${formatDate(promotion.expiresAt, { year: undefined })}`}
+            </span>
+            {!expired && (
+              <small className={trust.recent ? "is-verified" : "is-warning"}>
+                {trust.verifiedLabel}
+              </small>
+            )}
+          </div>
           <Link
             to={`/offre/${promotion.id}`}
             className={`card-cta ${expired ? "is-disabled" : ""}`}
