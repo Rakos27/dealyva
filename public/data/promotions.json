@@ -1,10 +1,13 @@
 {
-  "version": 1,
+  "version": 2,
   "source": "awin",
+  "moderation": "manual",
   "membership": "joined",
   "publisherId": null,
   "generatedAt": null,
+  "reviewedAt": null,
   "programmeCount": 0,
+  "candidateCount": 0,
   "offerCount": 0,
   "promotions": []
 }

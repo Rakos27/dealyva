@@ -52,7 +52,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Synchronize approved Awin offers
+      - name: Synchronize and publish manually approved Awin offers
         if: ${{ env.AWIN_ACCESS_TOKEN != '' && env.AWIN_PUBLISHER_ID != '' }}
         run: npm run awin:sync
 
