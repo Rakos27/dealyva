@@ -1,0 +1,12 @@
+node_modules/
+dist/
+dist-static/
+.vite/
+.vinext/
+.wrangler/
+.next/
+*.local
+*.log
+playwright-report/
+test-results/
+.DS_Store

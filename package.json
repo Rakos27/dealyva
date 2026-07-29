@@ -1,0 +1,41 @@
+{
+  "name": "offrely",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vinext dev -H 0.0.0.0 --port 5173",
+    "build": "tsc -b && vinext build && node scripts/prepare-sites-build.mjs",
+    "build:pages": "tsc -b && vite build --config vite.static.config.ts",
+    "lint": "eslint .",
+    "qa": "node scripts/qa.mjs",
+    "preview": "wrangler dev --config dist/server/wrangler.json --ip 0.0.0.0",
+    "deploy": "vinext-cloudflare deploy --config dist/server/wrangler.json"
+  },
+  "dependencies": {
+    "@vinext/cloudflare": "^1.0.0-beta.4",
+    "lucide-react": "^0.468.0",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "react-server-dom-webpack": "^19.2.6",
+    "react-router-dom": "7.18.2",
+    "vinext": "^1.0.0-beta.4"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.48.0",
+    "@eslint/js": "^10.0.1",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.4",
+    "@vitejs/plugin-rsc": "^0.5.26",
+    "eslint": "^10.8.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.3",
+    "globals": "^17.8.0",
+    "playwright": "^1.62.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.65.0",
+    "vite": "^8.0.0",
+    "wrangler": "^4.65.0"
+  }
+}
