@@ -41,7 +41,7 @@ export default defineConfig(({ mode }) => {
   };
 
   return {
-    base: "/test-01/",
+    base: "/dealyva/",
     plugins: [react(), adsenseHeadPlugin],
     define: {
       "import.meta.env.VITE_ROUTER_MODE": JSON.stringify("hash"),

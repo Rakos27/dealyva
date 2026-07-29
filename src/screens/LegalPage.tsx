@@ -70,7 +70,7 @@ export function LegalPage() {
                 demandes peuvent être transmises depuis le{" "}
                 <a
                   className="text-link"
-                  href="https://github.com/Rakos27/test-01"
+                  href="https://github.com/Rakos27/dealyva"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
