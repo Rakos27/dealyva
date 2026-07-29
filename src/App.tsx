@@ -7,17 +7,29 @@ import { ScrollToTop } from "./components/ScrollToTop";
 import { ToastRegion } from "./components/ToastRegion";
 import BrandsPage from "./screens/BrandsPage";
 import CategoriesPage from "./screens/CategoriesPage";
+import CookiesPage from "./screens/CookiesPage";
+import FaqPage from "./screens/FaqPage";
 import FavoritesPage from "./screens/FavoritesPage";
 import HomePage from "./screens/HomePage";
+import HowItWorksPage from "./screens/HowItWorksPage";
 import LegalPage from "./screens/LegalPage";
+import AboutPage from "./screens/AboutPage";
+import PrivacyPage from "./screens/PrivacyPage";
 import PromotionDetailPage from "./screens/PromotionDetailPage";
+import TermsPage from "./screens/TermsPage";
 
 const pageTitles: Record<string, string> = {
   "/": "Promotions",
   "/marques": "Marques",
   "/categories": "Catégories",
   "/favoris": "Mes favoris",
-  "/mentions-legales": "Mentions légales et confidentialité",
+  "/a-propos": "À propos",
+  "/comment-ca-marche": "Comment ça marche",
+  "/faq": "Questions fréquentes",
+  "/mentions-legales": "Mentions légales",
+  "/conditions-utilisation": "Conditions d’utilisation",
+  "/confidentialite": "Politique de confidentialité",
+  "/cookies": "Cookies et traceurs",
 };
 
 function RouteMetadata() {
@@ -76,7 +88,13 @@ export default function App() {
           <Route path="categories" element={<CategoriesPage />} />
           <Route path="favoris" element={<FavoritesPage />} />
           <Route path="offre/:id" element={<PromotionDetailPage />} />
+          <Route path="a-propos" element={<AboutPage />} />
+          <Route path="comment-ca-marche" element={<HowItWorksPage />} />
+          <Route path="faq" element={<FaqPage />} />
           <Route path="mentions-legales" element={<LegalPage />} />
+          <Route path="conditions-utilisation" element={<TermsPage />} />
+          <Route path="confidentialite" element={<PrivacyPage />} />
+          <Route path="cookies" element={<CookiesPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>

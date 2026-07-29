@@ -16,6 +16,12 @@ const navItems = [
   { to: "/favoris", label: "Mes favoris" },
 ];
 
+const mobileEditorialItems = [
+  { to: "/comment-ca-marche", label: "Comment ça marche" },
+  { to: "/a-propos", label: "À propos" },
+  { to: "/faq", label: "FAQ" },
+];
+
 export function Header() {
   const { theme, toggleTheme, favorites } = useApp();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -75,6 +81,17 @@ export function Header() {
               {item.to === "/favoris" && favorites.length > 0 && (
                 <span>{favorites.length}</span>
               )}
+            </NavLink>
+          ))}
+          <span className="mobile-nav__divider" aria-hidden="true" />
+          {mobileEditorialItems.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              className={({ isActive }) => (isActive ? "is-active" : "")}
+              onClick={() => setMobileOpen(false)}
+            >
+              {item.label}
             </NavLink>
           ))}
         </nav>

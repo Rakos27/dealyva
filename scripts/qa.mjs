@@ -89,7 +89,13 @@ try {
     "/marques",
     "/categories",
     "/favoris",
+    "/a-propos",
+    "/comment-ca-marche",
+    "/faq",
     "/mentions-legales",
+    "/conditions-utilisation",
+    "/confidentialite",
+    "/cookies",
   ]) {
     await page.goto(`${baseURL}${route}`, { waitUntil: "domcontentloaded" });
     await page.locator("main").waitFor();

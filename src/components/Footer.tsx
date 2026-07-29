@@ -22,16 +22,17 @@ export function Footer() {
             <Link to="/categories">Catégories</Link>
           </div>
           <div>
-            <strong>Votre espace</strong>
-            <Link to="/favoris">Mes favoris</Link>
-            <Link to="/marques">Choisir mes marques</Link>
+            <strong>Dealyva</strong>
+            <Link to="/a-propos">À propos</Link>
+            <Link to="/comment-ca-marche">Comment ça marche</Link>
+            <Link to="/faq">Questions fréquentes</Link>
           </div>
           <div>
-            <strong>Dealyva</strong>
-            <Link to="/mentions-legales">Transparence</Link>
-            <Link to="/mentions-legales#confidentialite">
-              Confidentialité
-            </Link>
+            <strong>Informations légales</strong>
+            <Link to="/mentions-legales">Mentions légales</Link>
+            <Link to="/conditions-utilisation">Conditions d’utilisation</Link>
+            <Link to="/confidentialite">Confidentialité</Link>
+            <Link to="/cookies">Cookies</Link>
             {adSenseEnabled && (
               <button
                 className="footer-privacy-button"
@@ -46,7 +47,7 @@ export function Footer() {
       </div>
       <div className="container footer__bottom">
         <span>© 2026 Dealyva.</span>
-        <span>Conçu avec soin pour vos bonnes trouvailles.</span>
+        <span>Liens affiliés : Dealyva peut percevoir une commission.</span>
       </div>
     </footer>
   );
