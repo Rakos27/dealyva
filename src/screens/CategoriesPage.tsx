@@ -60,7 +60,7 @@ export function CategoriesPage() {
           </p>
           <h1 id="categories-title">Une envie, une catégorie.</h1>
           <p className="catalog-hero__intro">
-            Parcourez les univers Offrely et accédez directement aux
+            Parcourez les univers Dealyva et accédez directement aux
             réductions qui correspondent à vos projets du moment.
           </p>
         </div>
@@ -91,8 +91,8 @@ export function CategoriesPage() {
             <h2 id="category-results-title">Explorez le catalogue</h2>
           </div>
           <p>
-            Des sélections fictives, pensées pour illustrer toute la richesse
-            du futur service.
+            Des sélections de démonstration enrichies par les offres partenaires
+            disponibles.
           </p>
         </div>
 
@@ -177,11 +177,11 @@ export function CategoriesPage() {
       <aside className="catalog-note" aria-label="Information">
         <Sparkles aria-hidden="true" size={20} />
         <div>
-          <h2>Un catalogue vivant, présenté en démonstration</h2>
+          <h2>Un catalogue vivant et transparent</h2>
           <p>
-            Les offres, réductions et disponibilités de cette version sont
-            fictives. Elles illustrent le fonctionnement d’Offrely avant la
-            connexion de flux marchands réels.
+            Dealyva associe des données de démonstration à des offres
+            partenaires synchronisées via Awin. Leur origine est indiquée sur
+            chaque promotion.
           </p>
         </div>
         <Link className="text-link" to="/">

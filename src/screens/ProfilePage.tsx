@@ -101,7 +101,7 @@ export default function ProfilePage() {
             Espace personnel
           </p>
           <h1 id="profile-title">
-            {user ? `Bonjour, ${user.name.split(" ")[0]}.` : "Votre Offrely, à votre image."}
+            {user ? `Bonjour, ${user.name.split(" ")[0]}.` : "Votre Dealyva, à votre image."}
           </h1>
           <p>
             Retrouvez ici vos marques, votre activité et les réglages conservés
@@ -121,7 +121,7 @@ export default function ProfilePage() {
             <h2 id="demo-login-title">Ouvrez votre espace personnel.</h2>
             <p>
               Cette connexion sert uniquement à présenter l’expérience
-              Offrely. Aucun mot de passe, compte serveur ou donnée sensible
+              Dealyva. Aucun mot de passe, compte serveur ou donnée sensible
               n’est utilisé.
             </p>
             <ul className="feature-check-list">
@@ -422,7 +422,7 @@ export default function ProfilePage() {
             <p className="eyebrow">Action irréversible</p>
             <h2 id="delete-dialog-title">Tout recommencer&nbsp;?</h2>
             <p id="delete-dialog-description">
-              Cette action remettra Offrely à son état initial et supprimera
+              Cette action remettra Dealyva à son état initial et supprimera
               toutes les données de démonstration que vous avez personnalisées
               sur cet appareil.
             </p>

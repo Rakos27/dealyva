@@ -275,7 +275,7 @@ export function BrandsPage() {
           <p aria-live="polite">
             {query
               ? `Résultats pour « ${query} »`
-              : "Toutes les marques partenaires fictives"}
+              : "Toutes les marques du catalogue"}
           </p>
         </div>
 
@@ -358,8 +358,9 @@ export function BrandsPage() {
       </section>
 
       <p className="demo-disclaimer">
-        Marques et disponibilités présentées à des fins de démonstration.
-        Offrely n’est ni affilié aux enseignes citées, ni mandaté par elles.
+        Les marques restent la propriété de leurs titulaires. Les offres
+        partenaires proviennent du réseau Awin ; les autres données sont
+        présentées à des fins de démonstration.
       </p>
     </main>
   );

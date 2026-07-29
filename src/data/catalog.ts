@@ -362,7 +362,7 @@ const makePromotion = (seed: OfferSeed, index: number): Promotion => {
     onlineOnly: true,
     terms: [
       seed.condition,
-      "Offre fictive créée pour la démonstration Offrely, sans garantie de disponibilité.",
+      "Offre fictive créée pour la démonstration Dealyva, sans garantie de disponibilité.",
     ],
     tags: seed.tags,
   };

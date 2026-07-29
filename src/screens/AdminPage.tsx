@@ -894,7 +894,7 @@ function PromotionForm({
                   promoCode: event.target.value.toUpperCase(),
                 })
               }
-              placeholder="OFFRELY20"
+              placeholder="DEALYVA20"
             />
           </span>
         </label>

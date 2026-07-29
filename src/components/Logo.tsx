@@ -9,12 +9,12 @@ export function Logo({ compact = false }: LogoProps) {
     <Link
       to="/"
       className={`logo ${compact ? "logo--compact" : ""}`}
-      aria-label="Offrely, retour à l’accueil"
+      aria-label="Dealyva, retour à l’accueil"
     >
       <span className="logo__mark" aria-hidden="true">
-        O
+        D
       </span>
-      <span className="logo__word">ffrely</span>
+      <span className="logo__word">ealyva</span>
       <span className="logo__dot" aria-hidden="true" />
     </Link>
   );

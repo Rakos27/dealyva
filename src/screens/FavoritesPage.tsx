@@ -20,15 +20,21 @@ type FavoriteSort =
   | "ending"
   | "brand";
 
-const FAVORITE_ALERTS_KEY = "offrely:favorite-alerts";
+const FAVORITE_ALERTS_KEY = "dealyva:favorite-alerts";
+const LEGACY_FAVORITE_ALERTS_KEY = "offrely:favorite-alerts";
 
 function loadFavoriteAlerts() {
   if (typeof window === "undefined") return [];
 
   try {
-    const storedValue: unknown = JSON.parse(
-      window.localStorage.getItem(FAVORITE_ALERTS_KEY) ?? "[]",
-    );
+    const legacyValue = window.localStorage.getItem(LEGACY_FAVORITE_ALERTS_KEY);
+    const rawValue =
+      window.localStorage.getItem(FAVORITE_ALERTS_KEY) ?? legacyValue ?? "[]";
+    const storedValue: unknown = JSON.parse(rawValue);
+    if (legacyValue !== null) {
+      window.localStorage.setItem(FAVORITE_ALERTS_KEY, rawValue);
+      window.localStorage.removeItem(LEGACY_FAVORITE_ALERTS_KEY);
+    }
     return Array.isArray(storedValue)
       ? storedValue.filter((value): value is string => typeof value === "string")
       : [];

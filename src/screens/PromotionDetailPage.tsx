@@ -96,8 +96,8 @@ export default function PromotionDetailPage() {
           title: promotion.title,
           text:
             promotion.discount > 0
-              ? `${promotion.brand} à −${promotion.discount}% sur Offrely`
-              : `${promotion.brand} sur Offrely`,
+              ? `${promotion.brand} à −${promotion.discount}% sur Dealyva`
+              : `${promotion.brand} sur Dealyva`,
           url: window.location.href,
         });
       } else {
@@ -260,7 +260,7 @@ export default function PromotionDetailPage() {
               ) : (
                 <p>
                   Cette promotion est entièrement fictive et sert à présenter
-                  l’expérience Offrely. Aucun achat n’est possible depuis ce prototype.
+                  l’expérience Dealyva. Aucun achat n’est possible depuis ce prototype.
                 </p>
               )}
             </div>

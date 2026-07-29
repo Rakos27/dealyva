@@ -40,7 +40,7 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
         </button>
         <span className="eyebrow">Compte de démonstration</span>
         <h2 id="auth-title">
-          {mode === "login" ? "Heureux de vous revoir." : "Créez votre espace Offrely."}
+          {mode === "login" ? "Heureux de vous revoir." : "Créez votre espace Dealyva."}
         </h2>
         <p className="muted">
           Vos informations restent uniquement dans ce navigateur. Aucun compte

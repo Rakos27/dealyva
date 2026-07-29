@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2400 800" role="img" aria-labelledby="title description">
+  <title id="title">Dealyva</title>
+  <desc id="description">Logo Dealyva noir et rouge</desc>
+  <rect width="2400" height="800" fill="#fff"/>
+  <g transform="translate(505 165)">
+    <path
+      d="M 240 83 A 162 162 0 1 0 337 290"
+      fill="none"
+      stroke="#e31334"
+      stroke-width="24"
+      stroke-linecap="square"
+    />
+    <text
+      x="102"
+      y="345"
+      fill="#141416"
+      font-family="Manrope, Inter, Arial, sans-serif"
+      font-size="300"
+      font-weight="800"
+      letter-spacing="-20"
+    >D</text>
+    <text
+      x="350"
+      y="345"
+      fill="#141416"
+      font-family="Manrope, Inter, Arial, sans-serif"
+      font-size="300"
+      font-weight="800"
+      letter-spacing="-20"
+    >ealyva</text>
+    <circle cx="1238" cy="327" r="29" fill="#e31334"/>
+  </g>
+</svg>

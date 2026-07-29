@@ -1,10 +1,9 @@
-name: Deploy Offrely to GitHub Pages
+name: Deploy Dealyva to GitHub Pages
 
 on:
   push:
     branches:
       - main
-      - agent/offrely-application
   workflow_dispatch:
   schedule:
     - cron: "17 */6 * * *"

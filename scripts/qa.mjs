@@ -1,6 +1,9 @@
 import { chromium } from "playwright";
 
-const baseURL = process.env.OFFRELY_URL ?? "http://127.0.0.1:5173";
+const baseURL =
+  process.env.DEALYVA_URL ??
+  process.env.OFFRELY_URL ??
+  "http://127.0.0.1:5173";
 const browser = await chromium.launch({ headless: true });
 const context = await browser.newContext({
   viewport: { width: 1440, height: 1000 },
@@ -31,7 +34,7 @@ try {
   await page.goto(baseURL, { waitUntil: "domcontentloaded" });
   await page.evaluate(() => window.localStorage.clear());
   await page.reload({ waitUntil: "domcontentloaded" });
-  await page.getByRole("heading", { name: /Ce que vous aimez/i }).waitFor();
+  await page.getByRole("heading", { name: /Les meilleurs deals/i }).waitFor();
   await page
     .locator(".catalog-results .promotion-card:not(.skeleton-card)")
     .first()
@@ -46,7 +49,7 @@ try {
   await page.locator("html[data-theme='dark']").waitFor();
   await page.getByRole("button", { name: /Activer le mode clair/i }).click();
   await page.screenshot({
-    path: "/tmp/offrely-home-desktop.png",
+    path: "/tmp/dealyva-home-desktop.png",
     fullPage: true,
   });
 
@@ -81,7 +84,7 @@ try {
   await page.getByRole("heading", { name: /Conditions de l’offre/i }).waitFor();
   await assertNoDocumentOverflow("Détail desktop");
   await page.screenshot({
-    path: "/tmp/offrely-detail-desktop.png",
+    path: "/tmp/dealyva-detail-desktop.png",
     fullPage: true,
   });
 
@@ -103,7 +106,7 @@ try {
   await page.getByRole("heading", { name: "Vue d’ensemble" }).waitFor();
   await assertNoDocumentOverflow("Administration desktop");
   await page.screenshot({
-    path: "/tmp/offrely-admin-desktop.png",
+    path: "/tmp/dealyva-admin-desktop.png",
     fullPage: true,
   });
   await page.getByRole("button", { name: "Promotions" }).click();
@@ -121,7 +124,7 @@ try {
   await page.getByRole("button", { name: /Ouvrir le menu/i }).click();
   await page.getByRole("navigation", { name: /Navigation mobile/i }).waitFor();
   await page.screenshot({
-    path: "/tmp/offrely-home-mobile.png",
+    path: "/tmp/dealyva-home-mobile.png",
     fullPage: true,
   });
 
@@ -140,10 +143,10 @@ try {
         status: "ok",
         promotionCardsOnFirstLoad: promotionCount,
         screenshots: [
-          "/tmp/offrely-home-desktop.png",
-          "/tmp/offrely-detail-desktop.png",
-          "/tmp/offrely-admin-desktop.png",
-          "/tmp/offrely-home-mobile.png",
+          "/tmp/dealyva-home-desktop.png",
+          "/tmp/dealyva-detail-desktop.png",
+          "/tmp/dealyva-admin-desktop.png",
+          "/tmp/dealyva-home-mobile.png",
         ],
       },
       null,

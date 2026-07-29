@@ -5,9 +5,12 @@ import type { ReactNode } from "react";
 import "../src/styles.css";
 
 export const metadata = {
-  title: "Promotions — Offrely",
+  title: "Promotions — Dealyva",
   description:
-    "Offrely rassemble les promotions en ligne des marques qui comptent pour vous.",
+    "Dealyva rassemble les meilleures promotions en ligne, partout.",
+  icons: {
+    icon: "/brand/dealyva-logo-carre.svg",
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
