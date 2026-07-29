@@ -91,8 +91,8 @@ page.on("console", (message) => {
 });
 page.on("pageerror", (error) => consoleErrors.push(error.message));
 
-async function assertNoDocumentOverflow(label) {
-  const dimensions = await page.evaluate(() => {
+async function assertNoDocumentOverflow(label, targetPage = page) {
+  const dimensions = await targetPage.evaluate(() => {
     const viewport = window.innerWidth;
     const overflowingElements = [...document.querySelectorAll("body *")]
       .map((element) => {
@@ -213,21 +213,21 @@ try {
     screenshots.push("/tmp/dealyva-detail-desktop.png");
   }
 
-  for (const route of [
-    "/marques",
-    "/categories",
-    "/favoris",
-    "/a-propos",
-    "/comment-ca-marche",
-    "/faq",
-    "/mentions-legales",
-    "/conditions-utilisation",
-    "/confidentialite",
-    "/cookies",
-    "/marque/awin-101-dealyva-tech",
+  for (const [route, heading] of [
+    ["/marques", /Vos marques, vos réductions/i],
+    ["/categories", /Une envie, une catégorie/i],
+    ["/favoris", /Mes favoris/i],
+    ["/a-propos", /Les offres utiles, sans le bruit/i],
+    ["/comment-ca-marche", /Comment fonctionne Dealyva/i],
+    ["/faq", /Questions fréquentes/i],
+    ["/mentions-legales", /Mentions légales/i],
+    ["/conditions-utilisation", /Conditions générales d’utilisation/i],
+    ["/confidentialite", /Politique de confidentialité/i],
+    ["/cookies", /Politique relative aux cookies/i],
+    ["/marque/awin-101-dealyva-tech", /Promotions Dealyva Tech/i],
   ]) {
     await page.goto(`${baseURL}${route}`, { waitUntil: "domcontentloaded" });
-    await page.locator("main").waitFor();
+    await page.getByRole("heading", { name: heading }).first().waitFor();
     await assertNoDocumentOverflow(route);
   }
 
@@ -283,6 +283,39 @@ try {
     );
   }
 
+  const demoPage = await context.newPage();
+  demoPage.setDefaultTimeout(15_000);
+  demoPage.on("console", (message) => {
+    if (message.type() === "error") consoleErrors.push(message.text());
+  });
+  demoPage.on("pageerror", (error) => consoleErrors.push(error.message));
+  await demoPage.goto(baseURL, { waitUntil: "domcontentloaded" });
+  await demoPage.evaluate(() => window.localStorage.clear());
+  await demoPage.reload({ waitUntil: "domcontentloaded" });
+  await demoPage
+    .getByRole("heading", { name: /Mode démonstration actif/i })
+    .waitFor();
+  const demoCards = demoPage.locator(
+    ".promotions-section .promotion-grid > .promotion-card--demo",
+  );
+  if ((await demoCards.count()) !== 12) {
+    throw new Error(
+      `Le catalogue fictif devrait afficher 12 cartes, mais ${await demoCards.count()} sont présentes.`,
+    );
+  }
+  await demoCards.first().locator(".promotion-card__title").click();
+  await demoPage
+    .getByText("Démonstration fictive", { exact: true })
+    .waitFor();
+  await demoPage
+    .getByRole("button", { name: /Tester le bouton/i })
+    .click();
+  await demoPage
+    .getByText(/aucun achat réel n’est effectué/i)
+    .waitFor();
+  await assertNoDocumentOverflow("Détail démonstration", demoPage);
+  await demoPage.close();
+
   const uniqueErrors = [...new Set(consoleErrors)].filter(
     (message) =>
       !message.includes("Failed to load resource") &&
@@ -297,6 +330,7 @@ try {
       {
         status: "ok",
         promotionCardsOnFirstLoad: promotionCount,
+        demoPromotionCards: 12,
         screenshots,
       },
       null,

@@ -33,6 +33,7 @@ export function PromotionCard({
   const remainingDays = daysUntil(promotion.expiresAt);
   const expired = promotion.isExpired || remainingDays < 0;
   const isPartner = promotion.source === "awin";
+  const isDemo = promotion.source === "demo";
   const hasPrice = promotion.currentPrice > 0;
   const trust = getOfferTrust(promotion);
 
@@ -106,6 +107,7 @@ export function PromotionCard({
         expired ? "promotion-card--expired" : "",
         saved ? "promotion-card--saved" : "",
         isPartner ? "promotion-card--partner" : "",
+        isDemo ? "promotion-card--demo" : "",
       ]
         .filter(Boolean)
         .join(" ")}
@@ -114,6 +116,11 @@ export function PromotionCard({
         <Link to={`/offre/${promotion.id}`} aria-label={`Voir ${promotion.title}`}>
           <img src={promotion.image} alt="" loading="lazy" />
         </Link>
+        {isDemo && (
+          <span className="demo-badge demo-badge--compact">
+            Démonstration
+          </span>
+        )}
         <div className="promotion-card__badges">
           {promotion.discount > 0 && (
             <span className="discount-badge">−{promotion.discount}%</span>
@@ -170,9 +177,11 @@ export function PromotionCard({
             <span className="saving">Économisez {formatPrice(promotion.savings)}</span>
           </div>
         ) : (
-          isPartner && (
+          (isPartner || isDemo) && (
             <p className="promotion-card__partner-note">
-              Offre vérifiée auprès du partenaire
+              {isDemo
+                ? "Scénario fictif pour tester Dealyva"
+                : "Offre vérifiée auprès du partenaire"}
             </p>
           )
         )}

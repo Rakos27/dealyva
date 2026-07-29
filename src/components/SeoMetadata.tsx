@@ -102,9 +102,12 @@ export function SeoMetadata() {
       : undefined;
 
     if (promotion) {
+      const isDemo = promotion.source === "demo";
       return {
         title: `${promotion.brand} — ${promotion.title}`,
-        description: `${promotion.description} Offre partenaire vérifiée sur Dealyva. Vérifiez le prix et les conditions chez ${promotion.merchant}.`,
+        description: isDemo
+          ? `${promotion.description} Scénario fictif sans achat réel, affiché pour tester Dealyva.`
+          : `${promotion.description} Offre partenaire vérifiée sur Dealyva. Vérifiez le prix et les conditions chez ${promotion.merchant}.`,
         image: promotion.image,
         breadcrumbs: [
           ["Promotions", "/"],
@@ -116,12 +119,17 @@ export function SeoMetadata() {
     }
 
     if (brand) {
-      const count = promotions.filter(
+      const brandPromotions = promotions.filter(
         (item) => item.brandId === brand.id && !item.isExpired,
-      ).length;
+      );
+      const count = brandPromotions.length;
+      const isDemo =
+        count > 0 && brandPromotions.every((item) => item.source === "demo");
       return {
         title: `Promotions ${brand.name}`,
-        description: `Retrouvez ${count || "les"} promotion${count === 1 ? "" : "s"} ${brand.name} vérifiée${count === 1 ? "" : "s"} sur Dealyva${category ? ` dans la catégorie ${category.name}` : ""}.`,
+        description: isDemo
+          ? `${brand.name} est une marque fictive du catalogue de démonstration Dealyva${category ? ` dans la catégorie ${category.name}` : ""}. Aucun achat réel.`
+          : `Retrouvez ${count || "les"} promotion${count === 1 ? "" : "s"} ${brand.name} vérifiée${count === 1 ? "" : "s"} sur Dealyva${category ? ` dans la catégorie ${category.name}` : ""}.`,
         breadcrumbs: [
           ["Promotions", "/"],
           ["Marques", "/marques"],

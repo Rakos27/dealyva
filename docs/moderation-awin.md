@@ -30,11 +30,25 @@ L’interface permet :
 Le jeton Awin reste côté serveur local. Il n’est ni intégré au JavaScript du
 navigateur, ni écrit dans les fichiers de promotions.
 
+## Catalogue de démonstration
+
+Tant que `public/data/promotions.json` ne contient aucune offre approuvée, le
+site charge automatiquement `public/data/demo-promotions.json`. Toutes les
+marques, remises, dates et codes de ce catalogue sont fictifs et clairement
+identifiés comme tels dans l’interface. Aucun lien marchand ni achat réel
+n’est proposé.
+
+Le catalogue de démonstration disparaît automatiquement dès qu’au moins une
+offre Awin approuvée est publiée. Il peut aussi être désactivé en définissant
+la variable GitHub `ENABLE_DEMO_OFFERS` à `false`.
+
 ## Fichiers
 
 - `data/awin-candidates.json` : file locale générée, ignorée par Git ;
 - `data/awin-moderation.json` : décisions conservées dans Git ;
 - `public/data/promotions.json` : offres approuvées consommées par le site.
+- `public/data/demo-promotions.json` : scénarios fictifs utilisés uniquement
+  lorsque le flux approuvé est vide.
 
 Une décision reste associée à l’identifiant Awin de l’offre. Une offre
 approuvée disparaît automatiquement du flux public lorsqu’elle expire ou

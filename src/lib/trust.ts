@@ -6,6 +6,17 @@ const genericTerms = [
 ];
 
 export function getOfferTrust(promotion: Promotion) {
+  if (promotion.source === "demo") {
+    return {
+      fresh: true,
+      recent: true,
+      hasDetailedTerms: true,
+      hasValidExpiry: true,
+      freshnessLabel: "Scénario de démonstration",
+      verifiedLabel: "Données fictives clairement identifiées",
+    };
+  }
+
   const verifiedAt = new Date(promotion.verifiedAt).getTime();
   const ageHours = Number.isFinite(verifiedAt)
     ? Math.max(0, (Date.now() - verifiedAt) / 3_600_000)

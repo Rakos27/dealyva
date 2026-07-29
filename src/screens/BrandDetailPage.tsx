@@ -68,6 +68,8 @@ export default function BrandDetailPage() {
 
   const category = categories.find((item) => item.id === brand.category);
   const selected = selectedBrands.includes(brand.id);
+  const isDemoBrand =
+    offers.length > 0 && offers.every((offer) => offer.source === "demo");
   const otherBrands = brands
     .filter(
       (item) => item.id !== brand.id && item.category === brand.category,
@@ -99,13 +101,13 @@ export default function BrandDetailPage() {
         <div>
           <p className="eyebrow">
             <BadgeCheck aria-hidden="true" size={16} />
-            Annonceur partenaire
+            {isDemoBrand ? "Marque fictive" : "Annonceur partenaire"}
           </p>
           <h1>Promotions {brand.name}</h1>
           <p>
-            Retrouvez les offres {brand.name} actuellement transmises par le
-            réseau partenaire. Vérifiez toujours les conditions finales sur le
-            site du marchand.
+            {isDemoBrand
+              ? `${brand.name} est une marque fictive créée pour tester les pages de marque, la sélection et les recommandations.`
+              : `Retrouvez les offres ${brand.name} actuellement transmises par le réseau partenaire. Vérifiez toujours les conditions finales sur le site du marchand.`}
           </p>
         </div>
         <button
@@ -137,15 +139,15 @@ export default function BrandDetailPage() {
       <section className="brand-trust-strip" aria-label="Méthode de vérification">
         <span>
           <RefreshCw aria-hidden="true" size={18} />
-          Synchronisation régulière
+          {isDemoBrand ? "Données de test identifiées" : "Synchronisation régulière"}
         </span>
         <span>
           <ShieldCheck aria-hidden="true" size={18} />
-          Source partenaire identifiée
+          {isDemoBrand ? "Aucune offre commerciale" : "Source partenaire identifiée"}
         </span>
         <span>
           <Store aria-hidden="true" size={18} />
-          Achat effectué chez le marchand
+          {isDemoBrand ? "Fonctionnalités testables" : "Achat effectué chez le marchand"}
         </span>
       </section>
 

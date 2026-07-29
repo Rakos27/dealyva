@@ -29,6 +29,9 @@ export function BrandsPage() {
   } = useApp();
   const [query, setQuery] = useState("");
   const [activeLetter, setActiveLetter] = useState<string | null>(null);
+  const isDemoCatalog =
+    promotions.length > 0 &&
+    promotions.every((promotion) => promotion.source === "demo");
 
   const selectedBrandIds = useMemo(
     () => new Set(selectedBrands),
@@ -113,12 +116,13 @@ export function BrandsPage() {
         <div className="catalog-hero__content">
           <p className="eyebrow">
             <Sparkles aria-hidden="true" size={16} />
-            Annonceurs partenaires
+            {isDemoCatalog ? "Marques fictives de démonstration" : "Annonceurs partenaires"}
           </p>
           <h1 id="brands-title">Vos marques, vos réductions.</h1>
           <p className="catalog-hero__intro">
-            Composez votre sélection pour retrouver en un instant les offres
-            qui comptent vraiment pour vous.
+            {isDemoCatalog
+              ? "Testez la recherche, l’alphabet et votre sélection avec des marques clairement fictives."
+              : "Composez votre sélection pour retrouver en un instant les offres qui comptent vraiment pour vous."}
           </p>
         </div>
 

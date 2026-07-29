@@ -3,16 +3,26 @@ import {
   adSenseEnabled,
   openAdPrivacySettings,
 } from "./AdSense";
+import { useApp } from "../context/AppContext";
 import { Logo } from "./Logo";
 
 export function Footer() {
+  const { promotions } = useApp();
+  const isDemoCatalog =
+    promotions.length > 0 &&
+    promotions.every((promotion) => promotion.source === "demo");
+
   return (
     <footer className="footer">
       <div className="container footer__top">
         <div className="footer__brand">
           <Logo />
           <p>Les meilleurs deals, partout.</p>
-          <span>Sélection indépendante d’offres partenaires vérifiées.</span>
+          <span>
+            {isDemoCatalog
+              ? "Catalogue fictif pour tester toutes les fonctionnalités."
+              : "Sélection indépendante d’offres partenaires vérifiées."}
+          </span>
         </div>
         <div className="footer__links" aria-label="Liens de pied de page">
           <div>
@@ -47,7 +57,11 @@ export function Footer() {
       </div>
       <div className="container footer__bottom">
         <span>© 2026 Dealyva.</span>
-        <span>Liens affiliés : Dealyva peut percevoir une commission.</span>
+        <span>
+          {isDemoCatalog
+            ? "Mode démonstration : aucune offre ni transaction réelle."
+            : "Liens affiliés : Dealyva peut percevoir une commission."}
+        </span>
       </div>
     </footer>
   );

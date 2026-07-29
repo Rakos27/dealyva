@@ -9,14 +9,21 @@ import { getOfferTrust } from "../lib/trust";
 
 export function OfferTrustPanel({ promotion }: { promotion: Promotion }) {
   const trust = getOfferTrust(promotion);
+  const isDemo = promotion.source === "demo";
 
   return (
     <section className="offer-trust" aria-labelledby="offer-trust-title">
       <div className="offer-trust__heading">
         <BadgeCheck aria-hidden="true" size={22} />
         <div>
-          <span className="eyebrow">Transparence de l’offre</span>
-          <h2 id="offer-trust-title">Ce que nous avons pu vérifier</h2>
+          <span className="eyebrow">
+            {isDemo ? "Mode test transparent" : "Transparence de l’offre"}
+          </span>
+          <h2 id="offer-trust-title">
+            {isDemo
+              ? "Ce que cette démonstration permet de tester"
+              : "Ce que nous avons pu vérifier"}
+          </h2>
         </div>
       </div>
       <div className="offer-trust__grid">
@@ -31,12 +38,16 @@ export function OfferTrustPanel({ promotion }: { promotion: Promotion }) {
           <ClipboardCheck aria-hidden="true" size={18} />
           <span>
             <strong>
-              {trust.hasDetailedTerms
+              {isDemo
+                ? "Conditions de test présentes"
+                : trust.hasDetailedTerms
                 ? "Conditions communiquées"
                 : "Conditions limitées"}
             </strong>
             <small>
-              {trust.hasDetailedTerms
+              {isDemo
+                ? "Aucun produit ni code commercial réel"
+                : trust.hasDetailedTerms
                 ? `${promotion.terms.length} condition${promotion.terms.length > 1 ? "s" : ""} transmise${promotion.terms.length > 1 ? "s" : ""}`
                 : "À consulter sur le site marchand"}
             </small>
@@ -46,11 +57,17 @@ export function OfferTrustPanel({ promotion }: { promotion: Promotion }) {
           <CalendarCheck2 aria-hidden="true" size={18} />
           <span>
             <strong>
-              {trust.hasValidExpiry
+              {isDemo
+                ? "Échéance simulée"
+                : trust.hasValidExpiry
                 ? "Échéance identifiée"
                 : "Échéance à contrôler"}
             </strong>
-            <small>La disponibilité finale reste celle du marchand</small>
+            <small>
+              {isDemo
+                ? "Date créée uniquement pour tester les filtres"
+                : "La disponibilité finale reste celle du marchand"}
+            </small>
           </span>
         </div>
       </div>

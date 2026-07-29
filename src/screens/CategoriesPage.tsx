@@ -50,6 +50,9 @@ export function CategoriesPage() {
   const representedCategories = categories.filter(
     (category) => (categoryStats.get(category.id)?.offerCount ?? 0) > 0,
   ).length;
+  const isDemoCatalog =
+    promotions.length > 0 &&
+    promotions.every((promotion) => promotion.source === "demo");
 
   return (
     <main className="page-shell catalog-page categories-page">
@@ -180,8 +183,9 @@ export function CategoriesPage() {
         <div>
           <h2>Un catalogue vivant et transparent</h2>
           <p>
-            Les promotions sont synchronisées via Awin auprès d’annonceurs
-            approuvés. Les conditions finales restent celles du marchand.
+            {isDemoCatalog
+              ? "Les offres actuellement affichées sont fictives et servent uniquement à tester l’interface. Elles seront remplacées par les promotions d’annonceurs approuvés."
+              : "Les promotions sont synchronisées via Awin auprès d’annonceurs approuvés. Les conditions finales restent celles du marchand."}
           </p>
         </div>
         <Link className="text-link" to="/">

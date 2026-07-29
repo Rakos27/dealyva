@@ -165,9 +165,10 @@ function isPromotion(value: unknown): value is Promotion {
     typeof value.onlineOnly === "boolean" &&
     isStringArray(value.terms) &&
     isStringArray(value.tags) &&
-    value.source === "awin" &&
-    typeof value.affiliateUrl === "string" &&
-    /^https:\/\//i.test(value.affiliateUrl) &&
+    (value.source === "awin" || value.source === "demo") &&
+    (value.source === "demo" ||
+      (typeof value.affiliateUrl === "string" &&
+        /^https:\/\//i.test(value.affiliateUrl))) &&
     (value.sourceId === undefined || typeof value.sourceId === "string") &&
     (value.offerType === undefined ||
       value.offerType === "promotion" ||
@@ -321,9 +322,9 @@ function parsePromotionFeed(value: unknown): PromotionFeed | null {
   };
 }
 
-function promotionFeedUrl(): string {
+function promotionFeedUrl(fileName = "promotions.json"): string {
   const base = import.meta.env.BASE_URL || "/";
-  return `${base.endsWith("/") ? base : `${base}/`}data/promotions.json`;
+  return `${base.endsWith("/") ? base : `${base}/`}data/${fileName}`;
 }
 
 export function AppProvider({ children }: PropsWithChildren) {
@@ -427,19 +428,46 @@ export function AppProvider({ children }: PropsWithChildren) {
   );
 
   const syncAwinPromotions = useCallback(async (signal?: AbortSignal) => {
-    const response = await fetch(promotionFeedUrl(), {
-      cache: "no-store",
-      headers: { Accept: "application/json" },
-      signal,
-    });
+    const fetchFeed = async (fileName: string) => {
+      const response = await fetch(promotionFeedUrl(fileName), {
+        cache: "no-store",
+        headers: { Accept: "application/json" },
+        signal,
+      });
 
-    if (!response.ok) {
-      throw new Error(`Flux de promotions indisponible (${response.status})`);
+      if (!response.ok) {
+        throw new Error(`Flux de promotions indisponible (${response.status})`);
+      }
+
+      const feed = parsePromotionFeed(await response.json());
+      if (!feed) {
+        throw new Error("Le flux de promotions est invalide");
+      }
+      return feed;
+    };
+
+    let feed: PromotionFeed | null = null;
+    let liveFeedError: unknown = null;
+
+    try {
+      feed = await fetchFeed("promotions.json");
+    } catch (error) {
+      liveFeedError = error;
     }
 
-    const feed = parsePromotionFeed(await response.json());
+    const demoEnabled = import.meta.env.VITE_ENABLE_DEMO_OFFERS !== "false";
+    if (demoEnabled && (!feed || feed.promotions.length === 0)) {
+      try {
+        feed = await fetchFeed("demo-promotions.json");
+      } catch {
+        // Fall back to the empty live feed when the optional demo feed fails.
+      }
+    }
+
     if (!feed) {
-      throw new Error("Le flux de promotions est invalide");
+      throw liveFeedError instanceof Error
+        ? liveFeedError
+        : new Error("Le flux de promotions est indisponible");
     }
 
     setState((current) => {
@@ -468,7 +496,12 @@ export function AppProvider({ children }: PropsWithChildren) {
       };
     });
 
-    return feed.promotions.length;
+    return {
+      count: feed.promotions.length,
+      isDemo:
+        feed.promotions.length > 0 &&
+        feed.promotions.every((promotion) => promotion.source === "demo"),
+    };
   }, []);
 
   useEffect(() => {
@@ -600,10 +633,12 @@ export function AppProvider({ children }: PropsWithChildren) {
     setIsRefreshing(true);
 
     try {
-      const count = await syncAwinPromotions();
+      const { count, isDemo } = await syncAwinPromotions();
       showToast(
         count > 0
-          ? `${count} offre${count !== 1 ? "s" : ""} partenaire${count !== 1 ? "s" : ""} synchronisée${count !== 1 ? "s" : ""}`
+          ? isDemo
+            ? `Catalogue de démonstration actualisé (${count} scénarios fictifs)`
+            : `${count} offre${count !== 1 ? "s" : ""} partenaire${count !== 1 ? "s" : ""} synchronisée${count !== 1 ? "s" : ""}`
           : "Flux Awin à jour : aucune offre approuvée pour le moment",
         "success",
       );
