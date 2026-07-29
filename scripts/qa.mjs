@@ -109,7 +109,7 @@ try {
   await page.getByRole("button", { name: "Promotions" }).click();
   await page.getByRole("button", { name: /Ajouter une promotion/i }).click();
   await page.getByRole("heading", { name: "Nouvelle promotion" }).waitFor();
-  await page.getByRole("button", { name: "Fermer" }).click();
+  await page.getByRole("button", { name: "Fermer", exact: true }).click();
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(baseURL, { waitUntil: "domcontentloaded" });

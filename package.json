@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vinext dev -H 0.0.0.0 --port 5173",
     "build": "tsc -b && vinext build && node scripts/prepare-sites-build.mjs",
+    "build:pages": "tsc -b && vite build --config vite.static.config.ts",
     "lint": "eslint .",
     "qa": "node scripts/qa.mjs",
     "preview": "wrangler dev --config dist/server/wrangler.json --ip 0.0.0.0",
