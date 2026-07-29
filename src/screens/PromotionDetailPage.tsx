@@ -75,6 +75,8 @@ export default function PromotionDetailPage() {
 
   const saved = favorites.includes(promotion.id);
   const expired = promotion.isExpired || daysUntil(promotion.expiresAt) < 0;
+  const isPartner = promotion.source === "awin";
+  const hasPrice = promotion.currentPrice > 0;
 
   const copyCode = async () => {
     if (!promotion.promoCode) return;
@@ -92,7 +94,10 @@ export default function PromotionDetailPage() {
       if (navigator.share) {
         await navigator.share({
           title: promotion.title,
-          text: `${promotion.brand} à −${promotion.discount}% sur Offrely`,
+          text:
+            promotion.discount > 0
+              ? `${promotion.brand} à −${promotion.discount}% sur Offrely`
+              : `${promotion.brand} sur Offrely`,
           url: window.location.href,
         });
       } else {
@@ -119,20 +124,26 @@ export default function PromotionDetailPage() {
         </button>
 
         <section
-          className={`offer-detail ${expired ? "offer-detail--expired" : ""}`}
+          className={`offer-detail ${expired ? "offer-detail--expired" : ""}${
+            isPartner ? " offer-detail--partner" : ""
+          }`}
         >
           <div className="offer-detail__media">
             <img src={promotion.image} alt={promotion.title} />
             <div className="offer-detail__media-top">
-              <span className="discount-badge discount-badge--large">
-                −{promotion.discount}%
-              </span>
+              {promotion.discount > 0 ? (
+                <span className="discount-badge discount-badge--large">
+                  −{promotion.discount}%
+                </span>
+              ) : (
+                isPartner && <span className="partner-badge">Offre partenaire</span>
+              )}
               {promotion.isNew && !expired && (
                 <span className="new-badge">Nouveau</span>
               )}
               {expired && <span className="expired-badge">Offre expirée</span>}
             </div>
-            <DemoBadge />
+            {!isPartner && <DemoBadge />}
           </div>
           <div className="offer-detail__content">
             <div className="offer-detail__eyebrow">
@@ -141,11 +152,13 @@ export default function PromotionDetailPage() {
             </div>
             <h1>{promotion.title}</h1>
             <p className="offer-detail__description">{promotion.description}</p>
-            <div className="offer-detail__price">
-              <strong>{formatPrice(promotion.currentPrice)}</strong>
-              <s>{formatPrice(promotion.originalPrice)}</s>
-              <span>Vous économisez {formatPrice(promotion.savings)}</span>
-            </div>
+            {hasPrice && (
+              <div className="offer-detail__price">
+                <strong>{formatPrice(promotion.currentPrice)}</strong>
+                <s>{formatPrice(promotion.originalPrice)}</s>
+                <span>Vous économisez {formatPrice(promotion.savings)}</span>
+              </div>
+            )}
 
             {promotion.promoCode && !expired && (
               <div className="detail-code">
@@ -181,27 +194,43 @@ export default function PromotionDetailPage() {
               <span>
                 <ShieldCheck size={18} />
                 <span>
-                  <small>Dernière vérification simulée</small>
+                  <small>
+                    {isPartner
+                      ? "Dernière synchronisation Awin"
+                      : "Dernière vérification simulée"}
+                  </small>
                   <strong>{formatDate(promotion.verifiedAt)}</strong>
                 </span>
               </span>
             </div>
 
             <div className="offer-detail__actions">
-              <button
-                type="button"
-                className="button button--primary button--large"
-                disabled={expired}
-                onClick={() =>
-                  showToast(
-                    "Lien marchand désactivé dans cette démonstration",
-                    "default",
-                  )
-                }
-              >
-                {expired ? "Cette offre est expirée" : "Voir l’offre"}
-                {!expired && <ExternalLink size={17} />}
-              </button>
+              {isPartner && promotion.affiliateUrl && !expired ? (
+                <a
+                  className="button button--primary button--large"
+                  href={promotion.affiliateUrl}
+                  target="_blank"
+                  rel="sponsored noopener noreferrer"
+                >
+                  Voir l’offre chez {promotion.brand}
+                  <ExternalLink size={17} />
+                </a>
+              ) : (
+                <button
+                  type="button"
+                  className="button button--primary button--large"
+                  disabled={expired}
+                  onClick={() =>
+                    showToast(
+                      "Lien marchand désactivé dans cette démonstration",
+                      "default",
+                    )
+                  }
+                >
+                  {expired ? "Cette offre est expirée" : "Voir l’offre"}
+                  {!expired && <ExternalLink size={17} />}
+                </button>
+              )}
               <button
                 type="button"
                 className={`button button--icon-text ${saved ? "is-active" : ""}`}
@@ -222,10 +251,18 @@ export default function PromotionDetailPage() {
             </div>
             <div className="demo-callout">
               <Info size={17} />
-              <p>
-                Cette promotion est entièrement fictive et sert à présenter
-                l’expérience Offrely. Aucun achat n’est possible depuis ce prototype.
-              </p>
+              {isPartner ? (
+                <p>
+                  Offre transmise par Awin et vérifiée lors de la dernière
+                  synchronisation. Les conditions finales sont celles affichées
+                  sur le site du marchand.
+                </p>
+              ) : (
+                <p>
+                  Cette promotion est entièrement fictive et sert à présenter
+                  l’expérience Offrely. Aucun achat n’est possible depuis ce prototype.
+                </p>
+              )}
             </div>
           </div>
         </section>

@@ -134,8 +134,13 @@ interface StorageEnvelope {
   state: StoredAppState;
 }
 
+interface PromotionFeed {
+  generatedAt: string | null;
+  promotions: Promotion[];
+}
+
 const STORAGE_KEY = "offrely:app-state";
-const STORAGE_VERSION = 1;
+const STORAGE_VERSION = 2;
 const MAX_RECENTLY_VIEWED = 20;
 const MAX_NOTIFICATIONS = 30;
 const DEFAULT_TOAST_DURATION = 3_600;
@@ -248,8 +253,51 @@ function isPromotion(value: unknown): value is Promotion {
     (value.isExpired === undefined || typeof value.isExpired === "boolean") &&
     typeof value.onlineOnly === "boolean" &&
     isStringArray(value.terms) &&
-    isStringArray(value.tags)
+    isStringArray(value.tags) &&
+    (value.source === undefined ||
+      value.source === "demo" ||
+      value.source === "awin") &&
+    (value.sourceId === undefined || typeof value.sourceId === "string") &&
+    (value.affiliateUrl === undefined ||
+      typeof value.affiliateUrl === "string") &&
+    (value.offerType === undefined ||
+      value.offerType === "promotion" ||
+      value.offerType === "voucher")
   );
+}
+
+function parsePromotionFeed(value: unknown): PromotionFeed | null {
+  if (
+    !isRecord(value) ||
+    !Array.isArray(value.promotions) ||
+    !value.promotions.every(isPromotion) ||
+    value.promotions.some(
+      (promotion) =>
+        promotion.source !== "awin" ||
+        !promotion.affiliateUrl ||
+        !/^https:\/\//i.test(promotion.affiliateUrl),
+    ) ||
+    new Set(value.promotions.map((promotion) => promotion.id)).size !==
+      value.promotions.length
+  ) {
+    return null;
+  }
+
+  const now = Date.now();
+
+  return {
+    generatedAt:
+      typeof value.generatedAt === "string" ? value.generatedAt : null,
+    promotions: clonePromotions(value.promotions).filter((promotion) => {
+      const expiresAt = new Date(promotion.expiresAt).getTime();
+      return Number.isFinite(expiresAt) && expiresAt > now;
+    }),
+  };
+}
+
+function promotionFeedUrl(): string {
+  const base = import.meta.env.BASE_URL || "/";
+  return `${base.endsWith("/") ? base : `${base}/`}data/promotions.json`;
 }
 
 function isDemoUser(value: unknown): value is DemoUser {
@@ -562,6 +610,78 @@ export function AppProvider({ children }: PropsWithChildren) {
     },
     [dismissToast],
   );
+
+  const syncAwinPromotions = useCallback(async (signal?: AbortSignal) => {
+    const response = await fetch(promotionFeedUrl(), {
+      cache: "no-store",
+      headers: { Accept: "application/json" },
+      signal,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Flux de promotions indisponible (${response.status})`);
+    }
+
+    const feed = parsePromotionFeed(await response.json());
+    if (!feed) {
+      throw new Error("Le flux de promotions est invalide");
+    }
+
+    setState((current) => {
+      const promotions = [
+        ...feed.promotions,
+        ...current.promotions.filter(
+          (promotion) => promotion.source !== "awin",
+        ),
+      ];
+      const brands = current.brands.map((brand) => ({ ...brand }));
+      const brandIds = new Set(brands.map((brand) => brand.id));
+
+      for (const promotion of feed.promotions) {
+        if (brandIds.has(promotion.brandId)) {
+          continue;
+        }
+        brands.push({
+          id: promotion.brandId,
+          name: promotion.brand,
+          category: promotion.category,
+          initials: buildInitials(promotion.brand),
+          tone: "#E24659",
+        });
+        brandIds.add(promotion.brandId);
+      }
+
+      const promotionIds = new Set(
+        promotions.map((promotion) => promotion.id),
+      );
+
+      return {
+        ...current,
+        promotions,
+        brands,
+        favorites: current.favorites.filter((id) => promotionIds.has(id)),
+        recentlyViewed: current.recentlyViewed.filter((id) =>
+          promotionIds.has(id),
+        ),
+        lastUpdated: feed.generatedAt ?? new Date().toISOString(),
+      };
+    });
+
+    return feed.promotions.length;
+  }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    // The state update occurs only after the asynchronous feed request resolves.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void syncAwinPromotions(controller.signal).catch((error: unknown) => {
+      if (error instanceof DOMException && error.name === "AbortError") {
+        return;
+      }
+      // The demonstration catalogue remains usable if the published feed is absent.
+    });
+    return () => controller.abort();
+  }, [syncAwinPromotions]);
 
   const setTheme = useCallback((theme: Theme) => {
     setState((current) => ({ ...current, theme }));
@@ -1048,94 +1168,20 @@ export function AppProvider({ children }: PropsWithChildren) {
     setIsRefreshing(true);
 
     try {
-      await new Promise<void>((resolve) => {
-        window.setTimeout(resolve, 650);
-      });
-
-      const now = new Date();
-      const nowIso = now.toISOString();
-      const shouldCreateOffer = Math.random() < 0.6;
-      let newOfferTitle = "";
-
-      setState((current) => {
-        const refreshed = current.promotions.map((promotion) => {
-          const expiration = new Date(promotion.expiresAt).getTime();
-          const created = new Date(promotion.createdAt).getTime();
-          return {
-            ...promotion,
-            isExpired:
-              promotion.isExpired ||
-              (Number.isFinite(expiration) &&
-                expiration <= now.getTime()),
-            isNew:
-              promotion.isNew &&
-              Number.isFinite(created) &&
-              now.getTime() - created < 72 * 60 * 60 * 1_000,
-          };
-        });
-
-        const eligible = refreshed.filter(
-          (promotion) => !promotion.isExpired,
-        );
-        const source =
-          eligible[Math.floor(Math.random() * eligible.length)] ??
-          catalogPromotions[0];
-
-        if (!shouldCreateOffer || !source) {
-          return {
-            ...current,
-            promotions: refreshed,
-            lastUpdated: nowIso,
-          };
-        }
-
-        const expiresAt = new Date(
-          now.getTime() + (5 + Math.floor(Math.random() * 10)) * 86_400_000,
-        ).toISOString();
-        const promotion: Promotion = {
-          ...source,
-          id: `actualisation-${slugify(source.brand)}-${now.getTime()}`,
-          title: source.title,
-          tags: [...source.tags, "nouveaute"],
-          terms: [...source.terms],
-          createdAt: nowIso,
-          verifiedAt: nowIso,
-          expiresAt,
-          isExpired: false,
-          isNew: true,
-        };
-        newOfferTitle = promotion.title;
-        const notification: AppNotification = {
-          id: `notification-${promotion.id}`,
-          title: `Nouvelle offre ${promotion.brand}`,
-          message: promotion.title,
-          createdAt: nowIso,
-          read: false,
-          promotionId: promotion.id,
-        };
-
-        return {
-          ...current,
-          promotions: [promotion, ...refreshed],
-          notifications: [
-            notification,
-            ...current.notifications,
-          ].slice(0, MAX_NOTIFICATIONS),
-          lastUpdated: nowIso,
-        };
-      });
-
+      const count = await syncAwinPromotions();
       showToast(
-        newOfferTitle
-          ? "Offres actualisées : une nouveauté a été ajoutée"
-          : "Les offres sont à jour",
+        count > 0
+          ? `${count} offre${count > 1 ? "s" : ""} partenaire${count > 1 ? "s" : ""} synchronisée${count > 1 ? "s" : ""}`
+          : "Flux Awin à jour : aucune offre partenaire approuvée",
         "success",
       );
+    } catch {
+      showToast("Impossible d’actualiser le flux Awin", "danger");
     } finally {
       refreshInProgress.current = false;
       setIsRefreshing(false);
     }
-  }, [showToast]);
+  }, [showToast, syncAwinPromotions]);
 
   const markNotificationRead = useCallback((id: string) => {
     setState((current) => ({
