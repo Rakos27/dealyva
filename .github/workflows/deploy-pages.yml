@@ -3,6 +3,7 @@ name: Deploy Offrely to GitHub Pages
 on:
   push:
     branches:
+      - main
       - agent/offrely-application
   workflow_dispatch:
 
