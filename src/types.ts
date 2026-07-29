@@ -1,0 +1,106 @@
+export type CategoryId =
+  | "mode"
+  | "sport"
+  | "beaute"
+  | "high-tech"
+  | "gaming"
+  | "maison"
+  | "alimentation"
+  | "voyage";
+
+export interface Category {
+  id: CategoryId;
+  name: string;
+  description: string;
+  eyebrow: string;
+  image: string;
+  accent: string;
+}
+
+export interface Brand {
+  id: string;
+  name: string;
+  category: CategoryId;
+  initials: string;
+  tone: string;
+}
+
+export interface Promotion {
+  id: string;
+  brandId: string;
+  brand: string;
+  merchant: string;
+  category: CategoryId;
+  title: string;
+  description: string;
+  originalPrice: number;
+  currentPrice: number;
+  discount: number;
+  savings: number;
+  image: string;
+  expiresAt: string;
+  verifiedAt: string;
+  createdAt: string;
+  promoCode?: string;
+  isNew?: boolean;
+  isExpired?: boolean;
+  onlineOnly: boolean;
+  terms: string[];
+  tags: string[];
+}
+
+export type SortOption =
+  | "recommended"
+  | "recent"
+  | "discount"
+  | "price-asc"
+  | "price-desc"
+  | "ending";
+
+export interface PromotionFilters {
+  query: string;
+  categories: CategoryId[];
+  brands: string[];
+  minPrice: number | null;
+  maxPrice: number | null;
+  minDiscount: number;
+  codeMode: "all" | "with-code" | "without-code";
+  endingSoon: boolean;
+  newOnly: boolean;
+  onlineOnly: boolean;
+  selectedBrandsOnly: boolean;
+  sort: SortOption;
+}
+
+export interface DemoUser {
+  name: string;
+  email: string;
+  initials: string;
+  joinedAt: string;
+}
+
+export interface AlertSettings {
+  favoriteBrand: boolean;
+  discountThreshold: boolean;
+  threshold: number;
+  priceDrop: boolean;
+  expiringSoon: boolean;
+  frequency: "instant" | "daily" | "weekly";
+}
+
+export interface AdminPromotionDraft {
+  title: string;
+  brandId: string;
+  merchant: string;
+  category: CategoryId;
+  originalPrice: number;
+  currentPrice: number;
+  promoCode: string;
+  expiresAt: string;
+}
+
+export interface ToastMessage {
+  id: number;
+  message: string;
+  tone?: "default" | "success" | "danger";
+}
