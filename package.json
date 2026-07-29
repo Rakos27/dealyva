@@ -10,6 +10,7 @@
     "lint": "eslint .",
     "qa": "node scripts/qa.mjs",
     "awin:check": "node --env-file-if-exists=.env.local scripts/awin-check.mjs",
+    "awin:sync": "node --env-file-if-exists=.env.local scripts/awin-sync.mjs",
     "preview": "wrangler dev --config dist/server/wrangler.json --ip 0.0.0.0",
     "deploy": "vinext-cloudflare deploy --config dist/server/wrangler.json"
   },

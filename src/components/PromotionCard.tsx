@@ -29,6 +29,8 @@ export function PromotionCard({
   const saved = favorites.includes(promotion.id);
   const remainingDays = daysUntil(promotion.expiresAt);
   const expired = promotion.isExpired || remainingDays < 0;
+  const isPartner = promotion.source === "awin";
+  const hasPrice = promotion.currentPrice > 0;
 
   const copyCode = async () => {
     if (!promotion.promoCode) return;
@@ -63,6 +65,7 @@ export function PromotionCard({
         compact ? "promotion-card--compact" : "",
         expired ? "promotion-card--expired" : "",
         saved ? "promotion-card--saved" : "",
+        isPartner ? "promotion-card--partner" : "",
       ]
         .filter(Boolean)
         .join(" ")}
@@ -72,7 +75,11 @@ export function PromotionCard({
           <img src={promotion.image} alt="" loading="lazy" />
         </Link>
         <div className="promotion-card__badges">
-          <span className="discount-badge">−{promotion.discount}%</span>
+          {promotion.discount > 0 ? (
+            <span className="discount-badge">−{promotion.discount}%</span>
+          ) : (
+            isPartner && <span className="partner-badge">Offre partenaire</span>
+          )}
           {promotion.isNew && !expired && <span className="new-badge">Nouveau</span>}
           {expired && <span className="expired-badge">Expirée</span>}
         </div>
@@ -95,7 +102,7 @@ export function PromotionCard({
             <Share2 size={17} />
           </button>
         </div>
-        <DemoBadge compact />
+        {!isPartner && <DemoBadge compact />}
       </div>
       <div className="promotion-card__body">
         {reason && <p className="recommendation-reason">{reason}</p>}
@@ -106,11 +113,19 @@ export function PromotionCard({
         <Link to={`/offre/${promotion.id}`} className="promotion-card__title">
           <h3>{promotion.title}</h3>
         </Link>
-        <div className="promotion-card__pricing">
-          <strong>{formatPrice(promotion.currentPrice)}</strong>
-          <span className="old-price">{formatPrice(promotion.originalPrice)}</span>
-          <span className="saving">Économisez {formatPrice(promotion.savings)}</span>
-        </div>
+        {hasPrice ? (
+          <div className="promotion-card__pricing">
+            <strong>{formatPrice(promotion.currentPrice)}</strong>
+            <span className="old-price">{formatPrice(promotion.originalPrice)}</span>
+            <span className="saving">Économisez {formatPrice(promotion.savings)}</span>
+          </div>
+        ) : (
+          isPartner && (
+            <p className="promotion-card__partner-note">
+              Offre vérifiée auprès du partenaire
+            </p>
+          )
+        )}
         {promotion.promoCode && !expired && (
           <button type="button" className="promo-code" onClick={copyCode}>
             <span>

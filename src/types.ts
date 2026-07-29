@@ -47,6 +47,10 @@ export interface Promotion {
   onlineOnly: boolean;
   terms: string[];
   tags: string[];
+  source?: "demo" | "awin";
+  sourceId?: string;
+  affiliateUrl?: string;
+  offerType?: "promotion" | "voucher";
 }
 
 export type SortOption =
