@@ -4,15 +4,15 @@ import { Footer } from "./components/Footer";
 import { Header } from "./components/Header";
 import { ScrollToTop } from "./components/ScrollToTop";
 import { ToastRegion } from "./components/ToastRegion";
-import AdminPage from "./pages/AdminPage";
-import BrandsPage from "./pages/BrandsPage";
-import CategoriesPage from "./pages/CategoriesPage";
-import FavoritesPage from "./pages/FavoritesPage";
-import HomePage from "./pages/HomePage";
-import LegalPage from "./pages/LegalPage";
-import PreferencesPage from "./pages/PreferencesPage";
-import ProfilePage from "./pages/ProfilePage";
-import PromotionDetailPage from "./pages/PromotionDetailPage";
+import AdminPage from "./screens/AdminPage";
+import BrandsPage from "./screens/BrandsPage";
+import CategoriesPage from "./screens/CategoriesPage";
+import FavoritesPage from "./screens/FavoritesPage";
+import HomePage from "./screens/HomePage";
+import LegalPage from "./screens/LegalPage";
+import PreferencesPage from "./screens/PreferencesPage";
+import ProfilePage from "./screens/ProfilePage";
+import PromotionDetailPage from "./screens/PromotionDetailPage";
 
 const pageTitles: Record<string, string> = {
   "/": "Promotions",

@@ -469,9 +469,7 @@ export function AppProvider({ children }: PropsWithChildren) {
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
   const refreshInProgress = useRef(false);
   const toastId = useRef(0);
-  const toastTimers = useRef(
-    new Map<number, ReturnType<typeof window.setTimeout>>(),
-  );
+  const toastTimers = useRef(new Map<number, number>());
 
   useEffect(() => {
     const root = document.documentElement;
