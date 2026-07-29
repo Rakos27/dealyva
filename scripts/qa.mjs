@@ -92,15 +92,51 @@ page.on("console", (message) => {
 page.on("pageerror", (error) => consoleErrors.push(error.message));
 
 async function assertNoDocumentOverflow(label) {
-  const dimensions = await page.evaluate(() => ({
-    viewport: window.innerWidth,
-    document: document.documentElement.scrollWidth,
-  }));
+  const dimensions = await page.evaluate(() => {
+    const viewport = window.innerWidth;
+    const overflowingElements = [...document.querySelectorAll("body *")]
+      .map((element) => {
+        const rect = element.getBoundingClientRect();
+        return {
+          selector: `${element.tagName.toLowerCase()}${element.id ? `#${element.id}` : ""}${element.classList.length ? `.${[...element.classList].join(".")}` : ""}`,
+          left: Math.round(rect.left),
+          right: Math.round(rect.right),
+          width: Math.round(rect.width),
+        };
+      })
+      .filter(
+        (element) =>
+          element.width > 0 &&
+          (element.left < -1 || element.right > viewport + 1),
+      )
+      .slice(0, 8);
+
+    return {
+      viewport,
+      document: document.documentElement.scrollWidth,
+      overflowingElements,
+    };
+  });
   if (dimensions.document > dimensions.viewport + 1) {
     throw new Error(
-      `${label} déborde horizontalement (${dimensions.document}px pour ${dimensions.viewport}px).`,
+      `${label} déborde horizontalement (${dimensions.document}px pour ${dimensions.viewport}px).\n${JSON.stringify(dimensions.overflowingElements, null, 2)}`,
     );
   }
+}
+
+async function revealMotionOnPage() {
+  await page.evaluate(async () => {
+    const step = Math.max(320, Math.round(window.innerHeight * 0.7));
+    for (let position = 0; position < document.body.scrollHeight; position += step) {
+      window.scrollTo({ top: position, behavior: "instant" });
+      await new Promise((resolve) => window.setTimeout(resolve, 35));
+    }
+    window.scrollTo({ top: 0, behavior: "instant" });
+    document
+      .querySelectorAll(".motion-reveal")
+      .forEach((element) => element.classList.add("is-motion-visible"));
+  });
+  await page.waitForTimeout(900);
 }
 
 try {
@@ -113,6 +149,9 @@ try {
       document.querySelector(".promotion-card:not(.skeleton-card)") !== null ||
       document.querySelector(".live-catalog-empty") !== null,
   );
+  await page.waitForFunction(
+    () => document.querySelector(".motion-reveal.is-motion-visible") !== null,
+  );
 
   const promotionCount = await page
     .locator(".promotion-card:not(.skeleton-card)")
@@ -121,6 +160,7 @@ try {
   await page.getByRole("button", { name: /Activer le mode sombre/i }).click();
   await page.locator("html[data-theme='dark']").waitFor();
   await page.getByRole("button", { name: /Activer le mode clair/i }).click();
+  await revealMotionOnPage();
   await page.screenshot({
     path: "/tmp/dealyva-home-desktop.png",
     fullPage: true,
@@ -134,6 +174,12 @@ try {
       .first()
       .getByRole("button", { name: /Ajouter aux favoris/i });
     await favoriteButton.click();
+    await page.waitForFunction(
+      () =>
+        document
+          .querySelector(".card-icon-button.is-active")
+          ?.classList.contains("is-celebrating") === true,
+    );
     await page.getByRole("link", { name: /Mes favoris/i }).first().click();
     await page.getByRole("heading", { name: "Mes favoris", exact: true }).waitFor();
     await page.locator(".favorite-item").first().waitFor();
@@ -153,7 +199,13 @@ try {
     await page
       .getByRole("heading", { name: /Ce que nous avons pu vérifier/i })
       .waitFor();
+    const promoCodeButton = page.locator(".promo-code").first();
+    if ((await promoCodeButton.count()) > 0) {
+      await promoCodeButton.click();
+      await page.locator(".promo-code.is-copied").waitFor();
+    }
     await assertNoDocumentOverflow("Détail desktop");
+    await revealMotionOnPage();
     await page.screenshot({
       path: "/tmp/dealyva-detail-desktop.png",
       fullPage: true,
@@ -183,6 +235,7 @@ try {
     waitUntil: "domcontentloaded",
   });
   await page.getByRole("heading", { name: /Promotions Dealyva Tech/i }).waitFor();
+  await revealMotionOnPage();
   await page.screenshot({
     path: "/tmp/dealyva-brand-desktop.png",
     fullPage: true,
@@ -199,6 +252,7 @@ try {
   await assertNoDocumentOverflow("Accueil mobile");
   await page.getByRole("button", { name: /Ouvrir le menu/i }).click();
   await page.getByRole("navigation", { name: /Navigation mobile/i }).waitFor();
+  await revealMotionOnPage();
   await page.screenshot({
     path: "/tmp/dealyva-home-mobile.png",
     fullPage: true,
@@ -210,11 +264,24 @@ try {
   });
   await page.getByRole("heading", { name: /Promotions Dealyva Tech/i }).waitFor();
   await assertNoDocumentOverflow("Marque mobile");
+  await revealMotionOnPage();
   await page.screenshot({
     path: "/tmp/dealyva-brand-mobile.png",
     fullPage: true,
   });
   screenshots.push("/tmp/dealyva-brand-mobile.png");
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto(baseURL, { waitUntil: "domcontentloaded" });
+  await page.getByRole("heading", { name: /Les meilleurs deals/i }).waitFor();
+  const motionEnabledWithReducedMotion = await page.evaluate(() =>
+    document.documentElement.classList.contains("motion-enabled"),
+  );
+  if (motionEnabledWithReducedMotion) {
+    throw new Error(
+      "Les animations restent actives malgré la préférence de réduction des mouvements.",
+    );
+  }
 
   const uniqueErrors = [...new Set(consoleErrors)].filter(
     (message) =>

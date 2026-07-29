@@ -8,6 +8,7 @@ import {
   X,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { AnimatedNumber } from "../components/AnimatedNumber";
 import { useApp } from "../context/AppContext";
 
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
@@ -124,20 +125,22 @@ export function BrandsPage() {
         <dl className="catalog-hero__stats" aria-label="Aperçu du catalogue">
           <div>
             <dt>Marques</dt>
-            <dd>{brands.length}</dd>
+            <dd><AnimatedNumber value={brands.length} /></dd>
           </div>
           <div>
             <dt>Offres en cours</dt>
             <dd>
-              {
-                promotions.filter((promotion) => !promotion.isExpired)
-                  .length
-              }
+              <AnimatedNumber
+                value={
+                  promotions.filter((promotion) => !promotion.isExpired)
+                    .length
+                }
+              />
             </dd>
           </div>
           <div>
             <dt>Dans votre sélection</dt>
-            <dd>{selectedBrands.length}</dd>
+            <dd><AnimatedNumber value={selectedBrands.length} /></dd>
           </div>
         </dl>
       </section>

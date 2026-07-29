@@ -6,6 +6,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { AnimatedNumber } from "../components/AnimatedNumber";
 import { PromotionCard } from "../components/PromotionCard";
 import { useApp } from "../context/AppContext";
 import type { Promotion } from "../types";
@@ -103,7 +104,7 @@ export default function FavoritesPage() {
         </div>
         <div className="account-hero__aside">
           <span>
-            <strong>{savedPromotions.length}</strong> offre
+            <strong><AnimatedNumber value={savedPromotions.length} /></strong> offre
             {savedPromotions.length !== 1 ? "s" : ""} sauvegardée
             {savedPromotions.length !== 1 ? "s" : ""}
           </span>

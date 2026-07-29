@@ -1,7 +1,8 @@
-import { Link, Outlet, Route, Routes } from "react-router-dom";
+import { Link, Outlet, Route, Routes, useLocation } from "react-router-dom";
 import { AdSenseProvider } from "./components/AdSense";
 import { Footer } from "./components/Footer";
 import { Header } from "./components/Header";
+import { MotionController } from "./components/MotionController";
 import { SeoMetadata } from "./components/SeoMetadata";
 import { ScrollToTop } from "./components/ScrollToTop";
 import { ToastRegion } from "./components/ToastRegion";
@@ -20,6 +21,8 @@ import PromotionDetailPage from "./screens/PromotionDetailPage";
 import TermsPage from "./screens/TermsPage";
 
 function PublicLayout() {
+  const { pathname } = useLocation();
+
   return (
     <>
       <a href="#main-content" className="skip-link">
@@ -27,7 +30,10 @@ function PublicLayout() {
       </a>
       <Header />
       <div id="main-content">
-        <Outlet />
+        <MotionController />
+        <div className="route-stage" key={pathname}>
+          <Outlet />
+        </div>
       </div>
       <Footer />
     </>

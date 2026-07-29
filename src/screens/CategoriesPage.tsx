@@ -7,6 +7,7 @@ import {
   Tags,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { AnimatedNumber } from "../components/AnimatedNumber";
 import { useApp } from "../context/AppContext";
 
 export function CategoriesPage() {
@@ -68,15 +69,15 @@ export function CategoriesPage() {
         <dl className="catalog-hero__stats" aria-label="Aperçu des catégories">
           <div>
             <dt>Univers</dt>
-            <dd>{categories.length}</dd>
+            <dd><AnimatedNumber value={categories.length} /></dd>
           </div>
           <div>
             <dt>Univers avec des offres</dt>
-            <dd>{representedCategories}</dd>
+            <dd><AnimatedNumber value={representedCategories} /></dd>
           </div>
           <div>
             <dt>Offres en cours</dt>
-            <dd>{activePromotions.length}</dd>
+            <dd><AnimatedNumber value={activePromotions.length} /></dd>
           </div>
         </dl>
       </section>

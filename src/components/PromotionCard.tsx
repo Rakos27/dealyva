@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ArrowUpRight,
   Check,
@@ -26,6 +26,9 @@ export function PromotionCard({
 }: PromotionCardProps) {
   const { favorites, toggleFavorite, showToast } = useApp();
   const [copied, setCopied] = useState(false);
+  const [favoriteBurst, setFavoriteBurst] = useState(false);
+  const favoriteTimer = useRef<number | null>(null);
+  const copyTimer = useRef<number | null>(null);
   const saved = favorites.includes(promotion.id);
   const remainingDays = daysUntil(promotion.expiresAt);
   const expired = promotion.isExpired || remainingDays < 0;
@@ -33,13 +36,45 @@ export function PromotionCard({
   const hasPrice = promotion.currentPrice > 0;
   const trust = getOfferTrust(promotion);
 
+  useEffect(
+    () => () => {
+      if (favoriteTimer.current !== null) {
+        window.clearTimeout(favoriteTimer.current);
+      }
+      if (copyTimer.current !== null) {
+        window.clearTimeout(copyTimer.current);
+      }
+    },
+    [],
+  );
+
+  const updateFavorite = () => {
+    const willSave = !saved;
+    toggleFavorite(promotion.id);
+
+    if (willSave) {
+      setFavoriteBurst(false);
+      window.requestAnimationFrame(() => setFavoriteBurst(true));
+      if (favoriteTimer.current !== null) {
+        window.clearTimeout(favoriteTimer.current);
+      }
+      favoriteTimer.current = window.setTimeout(
+        () => setFavoriteBurst(false),
+        620,
+      );
+    }
+  };
+
   const copyCode = async () => {
     if (!promotion.promoCode) return;
     try {
       await navigator.clipboard.writeText(promotion.promoCode);
       setCopied(true);
       showToast(`Code ${promotion.promoCode} copié`, "success");
-      window.setTimeout(() => setCopied(false), 1800);
+      if (copyTimer.current !== null) {
+        window.clearTimeout(copyTimer.current);
+      }
+      copyTimer.current = window.setTimeout(() => setCopied(false), 1800);
     } catch {
       showToast(`Code : ${promotion.promoCode}`);
     }
@@ -90,8 +125,14 @@ export function PromotionCard({
         <div className="promotion-card__quick-actions">
           <button
             type="button"
-            className={`card-icon-button ${saved ? "is-active" : ""}`}
-            onClick={() => toggleFavorite(promotion.id)}
+            className={[
+              "card-icon-button",
+              saved ? "is-active" : "",
+              favoriteBurst ? "is-celebrating" : "",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+            onClick={updateFavorite}
             aria-label={saved ? "Retirer des favoris" : "Ajouter aux favoris"}
             aria-pressed={saved}
           >
@@ -136,9 +177,13 @@ export function PromotionCard({
           )
         )}
         {promotion.promoCode && !expired && (
-          <button type="button" className="promo-code" onClick={copyCode}>
+          <button
+            type="button"
+            className={`promo-code${copied ? " is-copied" : ""}`}
+            onClick={copyCode}
+          >
             <span>
-              <small>Code</small>
+              <small>{copied ? "Copié" : "Code"}</small>
               <strong>{promotion.promoCode}</strong>
             </span>
             {copied ? <Check size={16} /> : <Copy size={16} />}

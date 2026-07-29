@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useMemo, type CSSProperties } from "react";
 import { Link, useParams } from "react-router-dom";
+import { AnimatedNumber } from "../components/AnimatedNumber";
 import { PromotionCard } from "../components/PromotionCard";
 import { useApp } from "../context/AppContext";
 import { formatRelativeTime } from "../lib/format";
@@ -121,7 +122,7 @@ export default function BrandDetailPage() {
       <dl className="brand-detail-stats">
         <div>
           <dt>Offres actives</dt>
-          <dd>{offers.length}</dd>
+          <dd><AnimatedNumber value={offers.length} /></dd>
         </div>
         <div>
           <dt>Catégorie</dt>
