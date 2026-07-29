@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { DemoBadge } from "../components/DemoBadge";
+import { AdSlot, adSenseSlots } from "../components/AdSense";
 import { PromotionCard } from "../components/PromotionCard";
 import { useApp } from "../context/AppContext";
 import { daysUntil, formatDate, formatPrice } from "../lib/format";
@@ -29,6 +29,7 @@ export default function PromotionDetailPage() {
     toggleFavorite,
     recordView,
     showToast,
+    isFeedLoading,
   } = useApp();
   const [copied, setCopied] = useState(false);
   const promotion = promotions.find((item) => item.id === id);
@@ -56,14 +57,25 @@ export default function PromotionDetailPage() {
   }, [promotion, promotions]);
 
   if (!promotion) {
+    if (isFeedLoading) {
+      return (
+        <main className="page-shell container">
+          <div className="empty-state standalone-empty" aria-live="polite">
+            <span className="eyebrow">Chargement</span>
+            <h1>Vérification de l’offre partenaire…</h1>
+          </div>
+        </main>
+      );
+    }
+
     return (
       <main className="page-shell container">
         <div className="empty-state standalone-empty">
           <span className="eyebrow">Offre introuvable</span>
           <h1>Cette promotion n’existe plus.</h1>
           <p>
-            Elle a peut-être été retirée de la démonstration ou son identifiant est
-            incorrect.
+            Elle a peut-être expiré, été retirée par l’annonceur ou son
+            identifiant est incorrect.
           </p>
           <Link className="button button--dark" to="/">
             Revenir aux promotions
@@ -131,19 +143,17 @@ export default function PromotionDetailPage() {
           <div className="offer-detail__media">
             <img src={promotion.image} alt={promotion.title} />
             <div className="offer-detail__media-top">
-              {promotion.discount > 0 ? (
+              {promotion.discount > 0 && (
                 <span className="discount-badge discount-badge--large">
                   −{promotion.discount}%
                 </span>
-              ) : (
-                isPartner && <span className="partner-badge">Offre partenaire</span>
               )}
+              {isPartner && <span className="partner-badge">Offre partenaire</span>}
               {promotion.isNew && !expired && (
                 <span className="new-badge">Nouveau</span>
               )}
               {expired && <span className="expired-badge">Offre expirée</span>}
             </div>
-            {!isPartner && <DemoBadge />}
           </div>
           <div className="offer-detail__content">
             <div className="offer-detail__eyebrow">
@@ -195,9 +205,7 @@ export default function PromotionDetailPage() {
                 <ShieldCheck size={18} />
                 <span>
                   <small>
-                    {isPartner
-                      ? "Dernière synchronisation Awin"
-                      : "Dernière vérification simulée"}
+                    Dernière synchronisation Awin
                   </small>
                   <strong>{formatDate(promotion.verifiedAt)}</strong>
                 </span>
@@ -220,15 +228,8 @@ export default function PromotionDetailPage() {
                   type="button"
                   className="button button--primary button--large"
                   disabled={expired}
-                  onClick={() =>
-                    showToast(
-                      "Lien marchand désactivé dans cette démonstration",
-                      "default",
-                    )
-                  }
                 >
-                  {expired ? "Cette offre est expirée" : "Voir l’offre"}
-                  {!expired && <ExternalLink size={17} />}
+                  {expired ? "Cette offre est expirée" : "Lien indisponible"}
                 </button>
               )}
               <button
@@ -249,20 +250,14 @@ export default function PromotionDetailPage() {
                 <Share2 size={19} />
               </button>
             </div>
-            <div className="demo-callout">
+            <div className="affiliate-callout">
               <Info size={17} />
-              {isPartner ? (
-                <p>
-                  Offre transmise par Awin et vérifiée lors de la dernière
-                  synchronisation. Les conditions finales sont celles affichées
-                  sur le site du marchand.
-                </p>
-              ) : (
-                <p>
-                  Cette promotion est entièrement fictive et sert à présenter
-                  l’expérience Dealyva. Aucun achat n’est possible depuis ce prototype.
-                </p>
-              )}
+              <p>
+                Offre transmise par Awin et vérifiée lors de la dernière
+                synchronisation. Les conditions finales sont celles affichées
+                sur le site du marchand. Ce lien peut rémunérer Dealyva sans
+                modifier votre prix.
+              </p>
             </div>
           </div>
         </section>
@@ -281,20 +276,15 @@ export default function PromotionDetailPage() {
             ))}
           </ul>
           <div className="merchant-note">
-            <strong>Une information semble incorrecte ?</strong>
+            <strong>Avant de poursuivre</strong>
             <p>
-              Dans la future version, vous pourrez nous signaler une offre expirée
-              ou une condition manquante.
+              Vérifiez le prix, la disponibilité et toutes les conditions
+              directement sur le site du marchand avant votre achat.
             </p>
-            <button
-              type="button"
-              className="text-link"
-              onClick={() => showToast("Merci, signalement fictif enregistré")}
-            >
-              Signaler cette offre <ArrowUpRight size={14} />
-            </button>
           </div>
         </section>
+
+        <AdSlot slot={adSenseSlots.detail} placement="detail" />
 
         {similar.length > 0 && (
           <section className="similar-section">

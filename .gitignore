@@ -9,4 +9,5 @@ dist-static/
 *.log
 playwright-report/
 test-results/
+public/ads.txt
 .DS_Store

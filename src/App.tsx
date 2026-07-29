@@ -1,17 +1,15 @@
 import { useEffect } from "react";
-import { Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
+import { Link, Outlet, Route, Routes, useLocation } from "react-router-dom";
+import { AdSenseProvider } from "./components/AdSense";
 import { Footer } from "./components/Footer";
 import { Header } from "./components/Header";
 import { ScrollToTop } from "./components/ScrollToTop";
 import { ToastRegion } from "./components/ToastRegion";
-import AdminPage from "./screens/AdminPage";
 import BrandsPage from "./screens/BrandsPage";
 import CategoriesPage from "./screens/CategoriesPage";
 import FavoritesPage from "./screens/FavoritesPage";
 import HomePage from "./screens/HomePage";
 import LegalPage from "./screens/LegalPage";
-import PreferencesPage from "./screens/PreferencesPage";
-import ProfilePage from "./screens/ProfilePage";
 import PromotionDetailPage from "./screens/PromotionDetailPage";
 
 const pageTitles: Record<string, string> = {
@@ -19,10 +17,7 @@ const pageTitles: Record<string, string> = {
   "/marques": "Marques",
   "/categories": "Catégories",
   "/favoris": "Mes favoris",
-  "/preferences": "Préférences et alertes",
-  "/profil": "Mon profil",
   "/mentions-legales": "Mentions légales et confidentialité",
-  "/administration": "Administration",
 };
 
 function RouteMetadata() {
@@ -59,10 +54,10 @@ function NotFoundPage() {
       <div className="empty-state standalone-empty">
         <span className="error-code">404</span>
         <h1>Cette page s’est égarée.</h1>
-        <p>Revenez au flux pour retrouver les meilleures offres de la démo.</p>
-        <a className="button button--dark" href="/">
+        <p>Revenez au flux pour retrouver les meilleures offres partenaires.</p>
+        <Link className="button button--dark" to="/">
           Retourner à l’accueil
-        </a>
+        </Link>
       </div>
     </main>
   );
@@ -72,6 +67,7 @@ export default function App() {
   return (
     <>
       <RouteMetadata />
+      <AdSenseProvider />
       <ScrollToTop />
       <Routes>
         <Route element={<PublicLayout />}>
@@ -79,14 +75,10 @@ export default function App() {
           <Route path="marques" element={<BrandsPage />} />
           <Route path="categories" element={<CategoriesPage />} />
           <Route path="favoris" element={<FavoritesPage />} />
-          <Route path="preferences" element={<PreferencesPage />} />
-          <Route path="profil" element={<ProfilePage />} />
           <Route path="offre/:id" element={<PromotionDetailPage />} />
           <Route path="mentions-legales" element={<LegalPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
-        <Route path="/administration" element={<AdminPage />} />
-        <Route path="/admin" element={<Navigate to="/administration" replace />} />
       </Routes>
       <ToastRegion />
     </>

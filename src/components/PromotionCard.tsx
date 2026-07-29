@@ -11,7 +11,6 @@ import { Link } from "react-router-dom";
 import type { Promotion } from "../types";
 import { daysUntil, formatDate, formatPrice } from "../lib/format";
 import { useApp } from "../context/AppContext";
-import { DemoBadge } from "./DemoBadge";
 
 interface PromotionCardProps {
   promotion: Promotion;
@@ -45,7 +44,11 @@ export function PromotionCard({
   };
 
   const share = async () => {
-    const url = `${window.location.origin}/offre/${promotion.id}`;
+    const route = `/offre/${promotion.id}`;
+    const url =
+      import.meta.env.VITE_ROUTER_MODE === "hash"
+        ? `${window.location.href.split("#")[0]}#${route}`
+        : new URL(route, window.location.origin).href;
     try {
       if (navigator.share) {
         await navigator.share({ title: promotion.title, url });
@@ -75,11 +78,10 @@ export function PromotionCard({
           <img src={promotion.image} alt="" loading="lazy" />
         </Link>
         <div className="promotion-card__badges">
-          {promotion.discount > 0 ? (
+          {promotion.discount > 0 && (
             <span className="discount-badge">−{promotion.discount}%</span>
-          ) : (
-            isPartner && <span className="partner-badge">Offre partenaire</span>
           )}
+          {isPartner && <span className="partner-badge">Partenaire</span>}
           {promotion.isNew && !expired && <span className="new-badge">Nouveau</span>}
           {expired && <span className="expired-badge">Expirée</span>}
         </div>
@@ -102,7 +104,6 @@ export function PromotionCard({
             <Share2 size={17} />
           </button>
         </div>
-        {!isPartner && <DemoBadge compact />}
       </div>
       <div className="promotion-card__body">
         {reason && <p className="recommendation-reason">{reason}</p>}
