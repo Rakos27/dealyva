@@ -91,7 +91,7 @@ export function CategoriesPage() {
             <h2 id="category-results-title">Explorez le catalogue</h2>
           </div>
           <p>
-            Des sélections de démonstration enrichies par les offres partenaires
+            Les catégories sont alimentées uniquement par les offres partenaires
             disponibles.
           </p>
         </div>
@@ -179,9 +179,8 @@ export function CategoriesPage() {
         <div>
           <h2>Un catalogue vivant et transparent</h2>
           <p>
-            Dealyva associe des données de démonstration à des offres
-            partenaires synchronisées via Awin. Leur origine est indiquée sur
-            chaque promotion.
+            Les promotions sont synchronisées via Awin auprès d’annonceurs
+            approuvés. Les conditions finales restent celles du marchand.
           </p>
         </div>
         <Link className="text-link" to="/">

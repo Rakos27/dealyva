@@ -47,7 +47,7 @@ export interface Promotion {
   onlineOnly: boolean;
   terms: string[];
   tags: string[];
-  source?: "demo" | "awin";
+  source?: "awin";
   sourceId?: string;
   affiliateUrl?: string;
   offerType?: "promotion" | "voucher";
@@ -74,33 +74,6 @@ export interface PromotionFilters {
   onlineOnly: boolean;
   selectedBrandsOnly: boolean;
   sort: SortOption;
-}
-
-export interface DemoUser {
-  name: string;
-  email: string;
-  initials: string;
-  joinedAt: string;
-}
-
-export interface AlertSettings {
-  favoriteBrand: boolean;
-  discountThreshold: boolean;
-  threshold: number;
-  priceDrop: boolean;
-  expiringSoon: boolean;
-  frequency: "instant" | "daily" | "weekly";
-}
-
-export interface AdminPromotionDraft {
-  title: string;
-  brandId: string;
-  merchant: string;
-  category: CategoryId;
-  originalPrice: number;
-  currentPrice: number;
-  promoCode: string;
-  expiresAt: string;
 }
 
 export interface ToastMessage {

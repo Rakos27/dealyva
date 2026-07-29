@@ -8,6 +8,10 @@ import {
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
+import {
+  adSenseEnabled,
+  openAdPrivacySettings,
+} from "../components/AdSense";
 
 const lastUpdated = "29 juillet 2026";
 
@@ -19,11 +23,11 @@ export function LegalPage() {
           <Scale aria-hidden="true" size={16} />
           Informations et transparence
         </p>
-        <h1 id="legal-title">Un prototype clair sur ce qu’il est.</h1>
+        <h1 id="legal-title">Un service clair sur son fonctionnement.</h1>
         <p>
-          Dealyva est actuellement une démonstration fonctionnelle. Cette page
-          distingue les choix du prototype des informations qui devront être
-          complétées avant toute mise en service publique.
+          Dealyva sélectionne des promotions partenaires et redirige les
+          utilisateurs vers les marchands. Le service ne vend aucun produit et
+          n’encaisse aucun paiement.
         </p>
         <p className="legal-hero__date">Dernière mise à jour : {lastUpdated}</p>
       </header>
@@ -31,16 +35,16 @@ export function LegalPage() {
       <nav className="legal-nav" aria-label="Sommaire de la page">
         <a href="#mentions-legales">Mentions légales</a>
         <a href="#confidentialite">Confidentialité</a>
-        <a href="#transparence">Transparence</a>
+        <a href="#transparence">Publicité et affiliation</a>
       </nav>
 
-      <aside className="legal-demo-banner" aria-label="Statut du service">
+      <aside className="legal-status-banner" aria-label="Statut du service">
         <Info aria-hidden="true" size={22} />
         <div>
-          <strong>Version de démonstration</strong>
+          <strong>Service de mise en relation</strong>
           <p>
-            Aucun achat réel, paiement, compte sécurisé, envoi d’e-mail ou
-            notification marchande n’est opéré par cette version.
+            Les achats, paiements, livraisons, retours et garanties sont
+            intégralement gérés par le marchand vers lequel vous êtes redirigé.
           </p>
         </div>
       </aside>
@@ -59,35 +63,40 @@ export function LegalPage() {
             </div>
 
             <div className="legal-card">
-              <h3>Éditeur du prototype</h3>
+              <h3>Éditeur</h3>
               <p>
-                Dealyva est présenté ici comme un concept de produit et non
-                comme un service commercial exploité par une société
-                identifiée. Les coordonnées de l’éditeur, la forme juridique,
-                le capital social, le numéro d’immatriculation et le directeur
-                de publication devront être renseignés avant une publication
-                destinée au public.
+                Le site est édité sous la marque Dealyva par le propriétaire du
+                projet. Dans l’attente d’une adresse de contact dédiée, les
+                demandes peuvent être transmises depuis le{" "}
+                <a
+                  className="text-link"
+                  href="https://github.com/Rakos27/test-01"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  dépôt officiel du projet
+                </a>
+                .
               </p>
             </div>
 
             <div className="legal-card">
-              <h3>Hébergement et contact</h3>
+              <h3>Hébergement</h3>
               <p>
-                L’hébergeur définitif et un point de contact officiel ne sont
-                pas configurés dans cette démonstration. Ces informations
-                devront apparaître ici dès que le projet disposera d’un
-                environnement de production et d’un responsable légal.
+                Dealyva est actuellement hébergé par GitHub Pages, un service
+                exploité par GitHub, Inc. Les éléments techniques du site sont
+                servis depuis l’infrastructure GitHub.
               </p>
             </div>
 
             <div className="legal-card">
               <h3>Propriété intellectuelle</h3>
               <p>
-                L’interface et les contenus éditoriaux propres à Dealyva sont
-                présentés à des fins de prototypage. Les noms, marques et
-                signes distinctifs cités restent la propriété de leurs
-                titulaires respectifs. Leur présence n’implique ni partenariat
-                ni validation du service.
+                L’identité et les contenus éditoriaux propres à Dealyva sont
+                protégés. Les noms, marques, visuels et signes distinctifs des
+                annonceurs restent la propriété de leurs titulaires respectifs.
+                Leur présence correspond à une offre diffusée via le réseau
+                partenaire et ne transfère aucun droit à Dealyva.
               </p>
             </div>
           </section>
@@ -106,60 +115,64 @@ export function LegalPage() {
             <div className="legal-card">
               <h3>Données enregistrées localement</h3>
               <p>
-                Afin de rendre le prototype interactif, les marques
-                sélectionnées, favoris, préférences, alertes fictives,
-                historique de consultation et profil de démonstration peuvent
-                être enregistrés dans le stockage local de votre navigateur.
-                Ces informations restent associées à cet appareil et à ce
-                navigateur.
+                Les favoris, marques sélectionnées, préférences d’affichage et
+                offres récemment consultées sont conservés dans le stockage
+                local de votre navigateur. Dealyva ne crée pas de compte
+                utilisateur et ne reçoit pas ces informations.
               </p>
               <div className="legal-inline-note">
                 <Database aria-hidden="true" size={18} />
                 <p>
-                  Vous pouvez effacer ces données depuis l’espace profil ou en
-                  supprimant les données du site dans les réglages de votre
-                  navigateur.
+                  Vous pouvez supprimer ces données à tout moment depuis les
+                  réglages de votre navigateur.
                 </p>
               </div>
             </div>
 
             <div className="legal-card">
-              <h3>Compte et alertes de démonstration</h3>
+              <h3>Publicité et consentement</h3>
               <p>
-                Le compte proposé ne constitue pas un dispositif
-                d’authentification sécurisé. N’utilisez aucun véritable mot de
-                passe ni information sensible. Les réglages d’alerte simulent
-                une expérience future : aucun e-mail, SMS ou notification
-                externe n’est envoyé.
-              </p>
-            </div>
-
-            <div className="legal-card">
-              <h3>Cookies et services externes</h3>
-              <p>
-                Le prototype ne requiert pas de cookie publicitaire. Des
-                ressources visuelles peuvent toutefois être chargées depuis
-                des services externes, qui appliquent alors leurs propres
-                règles techniques. Toute mesure d’audience ou tout traceur
-                ajouté ultérieurement devra faire l’objet d’une information
-                claire et, lorsque la loi l’exige, d’un consentement préalable.
+                Lorsque Google AdSense est activé, Google et ses partenaires
+                peuvent utiliser des cookies ou technologies similaires pour
+                diffuser, mesurer et personnaliser des annonces. Pour les
+                visiteurs concernés, les choix sont recueillis par une
+                plateforme de gestion du consentement certifiée par Google.
               </p>
               <div className="legal-inline-note">
                 <Cookie aria-hidden="true" size={18} />
                 <p>
-                  Aucun profil publicitaire ou commercial n’est construit par
-                  Dealyva dans cette démonstration.
+                  Vous pouvez accepter, refuser ou modifier vos choix depuis le
+                  message de confidentialité affiché par Google.
                 </p>
               </div>
+              {adSenseEnabled && (
+                <button
+                  className="text-link"
+                  type="button"
+                  onClick={openAdPrivacySettings}
+                >
+                  Gérer mes choix publicitaires
+                </button>
+              )}
+            </div>
+
+            <div className="legal-card">
+              <h3>Sites marchands</h3>
+              <p>
+                En cliquant sur une offre, vous quittez Dealyva. Le marchand,
+                Awin et leurs prestataires appliquent alors leurs propres règles
+                de confidentialité et peuvent traiter les données nécessaires
+                au suivi d’affiliation.
+              </p>
             </div>
 
             <div className="legal-card">
               <h3>Vos droits</h3>
               <p>
-                Si Dealyva devient un service connecté, cette section précisera
-                le responsable du traitement, les finalités, bases légales,
-                durées de conservation, destinataires et modalités d’exercice
-                des droits prévus par la réglementation applicable.
+                Toute demande relative aux données ou à la confidentialité peut
+                être adressée à l’éditeur via le canal de contact indiqué
+                ci-dessus. Les données conservées uniquement dans votre
+                navigateur peuvent être effacées directement sur votre appareil.
               </p>
             </div>
           </section>
@@ -171,39 +184,45 @@ export function LegalPage() {
               </span>
               <div>
                 <p className="eyebrow">03</p>
-                <h2>Transparence des offres</h2>
+                <h2>Publicité et affiliation</h2>
               </div>
             </div>
 
             <div className="legal-card legal-card--highlight">
-              <h3>Des sources d’offres clairement identifiées</h3>
+              <h3>Des offres issues d’annonceurs approuvés</h3>
               <p>
-                Dealyva distingue les offres partenaires synchronisées via Awin
-                des données de démonstration. Les conditions, prix et
-                disponibilités d’une offre partenaire doivent toujours être
-                vérifiés sur le site du marchand.
+                Les promotions visibles sur Dealyva sont synchronisées via Awin
+                auprès des annonceurs ayant accepté le partenariat. Aucun prix,
+                code ou avantage commercial n’est inventé par Dealyva.
               </p>
             </div>
 
             <div className="legal-card">
               <h3>Une affiliation transparente</h3>
               <p>
-                Certains liens vers les marchands sont des liens d’affiliation :
-                Dealyva peut percevoir une commission si un achat éligible est
-                réalisé, sans surcoût pour l’utilisateur. Cette relation est
-                signalée sur les offres concernées et n’accorde pas de priorité
-                payante dans les classements.
+                Les liens vers les marchands sont des liens d’affiliation.
+                Dealyva peut percevoir une commission lorsqu’un achat éligible
+                est réalisé, sans surcoût pour l’utilisateur. Cette rémunération
+                ne modifie pas les conditions affichées par le marchand.
+              </p>
+            </div>
+
+            <div className="legal-card">
+              <h3>Des annonces clairement séparées</h3>
+              <p>
+                Les emplacements Google AdSense portent la mention « Publicité ».
+                Ils sont distincts des cartes d’offres et ne déterminent pas le
+                classement éditorial des promotions partenaires.
               </p>
             </div>
 
             <div className="legal-card">
               <h3>Avant de profiter d’une offre</h3>
               <p>
-                L’utilisateur doit toujours vérifier le prix final, la
-                disponibilité et les conditions
-                directement sur le site du marchand. Celui-ci restera seul
-                responsable de la vente, du paiement, de la livraison et du
-                service après-vente.
+                Vérifiez toujours le prix final, la disponibilité et les
+                conditions directement sur le site du marchand. Celui-ci reste
+                seul responsable de la vente, du paiement, de la livraison et
+                du service après-vente.
               </p>
             </div>
           </section>
@@ -212,15 +231,15 @@ export function LegalPage() {
         <aside className="legal-sidebar" aria-label="Principes Dealyva">
           <div className="legal-sidebar__card">
             <Sparkles aria-hidden="true" size={20} />
-            <h2>Nos principes de prototype</h2>
+            <h2>Nos principes</h2>
             <ul>
               <li>
                 <LockKeyhole aria-hidden="true" size={16} />
-                Pas de données sensibles
+                Pas de compte ni de données sensibles
               </li>
               <li>
                 <Eye aria-hidden="true" size={16} />
-                Statut fictif toujours visible
+                Publicités et affiliation identifiées
               </li>
               <li>
                 <ShieldCheck aria-hidden="true" size={16} />
@@ -229,8 +248,8 @@ export function LegalPage() {
             </ul>
           </div>
           <p>
-            Une question sur cette démonstration ? Le canal de contact officiel
-            sera ajouté avant le lancement public.
+            Dealyva privilégie la transparence sur l’origine des offres et son
+            mode de rémunération.
           </p>
         </aside>
       </div>

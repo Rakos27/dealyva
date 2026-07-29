@@ -35,15 +35,15 @@ try {
   await page.evaluate(() => window.localStorage.clear());
   await page.reload({ waitUntil: "domcontentloaded" });
   await page.getByRole("heading", { name: /Les meilleurs deals/i }).waitFor();
-  await page
-    .locator(".catalog-results .promotion-card:not(.skeleton-card)")
-    .first()
-    .waitFor();
+  await page.waitForFunction(
+    () =>
+      document.querySelector(".promotion-card:not(.skeleton-card)") !== null ||
+      document.querySelector(".live-catalog-empty") !== null,
+  );
 
   const promotionCount = await page
-    .locator(".catalog-results .promotion-card:not(.skeleton-card)")
+    .locator(".promotion-card:not(.skeleton-card)")
     .count();
-  if (promotionCount < 1) throw new Error("Aucune promotion visible sur l’accueil.");
   await assertNoDocumentOverflow("Accueil desktop");
   await page.getByRole("button", { name: /Activer le mode sombre/i }).click();
   await page.locator("html[data-theme='dark']").waitFor();
@@ -53,46 +53,42 @@ try {
     fullPage: true,
   });
 
-  await page.getByRole("button", { name: /Choisir mes marques/i }).click();
-  await page.getByRole("dialog", { name: /Sélectionner des marques/i }).waitFor();
-  const brandSearch = page.getByPlaceholder(/Rechercher parmi les marques/i);
-  await brandSearch.fill("Nike");
-  await page.locator(".brand-option").filter({ hasText: "Nike" }).click();
-  await page.getByRole("button", { name: "Fermer", exact: true }).click();
+  const screenshots = ["/tmp/dealyva-home-desktop.png"];
 
-  const favoriteButton = page
-    .locator(".promotion-card")
-    .first()
-    .getByRole("button", { name: /Ajouter aux favoris/i });
-  await favoriteButton.click();
-  await page.getByRole("link", { name: /Mes favoris/i }).first().click();
-  await page.getByRole("heading", { name: "Mes favoris", exact: true }).waitFor();
-  await page.locator(".favorite-item").first().waitFor();
+  if (promotionCount > 0) {
+    const favoriteButton = page
+      .locator(".promotion-card")
+      .first()
+      .getByRole("button", { name: /Ajouter aux favoris/i });
+    await favoriteButton.click();
+    await page.getByRole("link", { name: /Mes favoris/i }).first().click();
+    await page.getByRole("heading", { name: "Mes favoris", exact: true }).waitFor();
+    await page.locator(".favorite-item").first().waitFor();
 
-  await page.goto(baseURL, { waitUntil: "domcontentloaded" });
-  await page.getByPlaceholder(/Une marque, un produit/i).fill(
-    "recherche volontairement introuvable 9284",
-  );
-  await page.getByRole("heading", { name: /Cette sélection est un peu trop précise/i }).waitFor();
-  await page.getByRole("button", { name: /Réinitialiser les filtres/i }).click();
-  await page
-    .locator(".catalog-results .promotion-card:not(.skeleton-card)")
-    .first()
-    .waitFor();
+    await page.goto(baseURL, { waitUntil: "domcontentloaded" });
+    await page.getByPlaceholder(/Une marque, un produit/i).fill(
+      "recherche volontairement introuvable 9284",
+    );
+    await page
+      .getByRole("heading", { name: /Cette sélection est un peu trop précise/i })
+      .waitFor();
+    await page.getByRole("button", { name: /Réinitialiser les filtres/i }).click();
+    await page.locator(".promotion-card:not(.skeleton-card)").first().waitFor();
 
-  await page.locator(".promotion-card__title").first().click();
-  await page.getByRole("heading", { name: /Conditions de l’offre/i }).waitFor();
-  await assertNoDocumentOverflow("Détail desktop");
-  await page.screenshot({
-    path: "/tmp/dealyva-detail-desktop.png",
-    fullPage: true,
-  });
+    await page.locator(".promotion-card__title").first().click();
+    await page.getByRole("heading", { name: /Conditions de l’offre/i }).waitFor();
+    await assertNoDocumentOverflow("Détail desktop");
+    await page.screenshot({
+      path: "/tmp/dealyva-detail-desktop.png",
+      fullPage: true,
+    });
+    screenshots.push("/tmp/dealyva-detail-desktop.png");
+  }
 
   for (const route of [
     "/marques",
     "/categories",
-    "/preferences",
-    "/profil",
+    "/favoris",
     "/mentions-legales",
   ]) {
     await page.goto(`${baseURL}${route}`, { waitUntil: "domcontentloaded" });
@@ -100,26 +96,13 @@ try {
     await assertNoDocumentOverflow(route);
   }
 
-  await page.goto(`${baseURL}/administration`, {
-    waitUntil: "domcontentloaded",
-  });
-  await page.getByRole("heading", { name: "Vue d’ensemble" }).waitFor();
-  await assertNoDocumentOverflow("Administration desktop");
-  await page.screenshot({
-    path: "/tmp/dealyva-admin-desktop.png",
-    fullPage: true,
-  });
-  await page.getByRole("button", { name: "Promotions" }).click();
-  await page.getByRole("button", { name: /Ajouter une promotion/i }).click();
-  await page.getByRole("heading", { name: "Nouvelle promotion" }).waitFor();
-  await page.getByRole("button", { name: "Fermer", exact: true }).click();
-
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(baseURL, { waitUntil: "domcontentloaded" });
-  await page
-    .locator(".catalog-results .promotion-card:not(.skeleton-card)")
-    .first()
-    .waitFor();
+  await page.waitForFunction(
+    () =>
+      document.querySelector(".promotion-card:not(.skeleton-card)") !== null ||
+      document.querySelector(".live-catalog-empty") !== null,
+  );
   await assertNoDocumentOverflow("Accueil mobile");
   await page.getByRole("button", { name: /Ouvrir le menu/i }).click();
   await page.getByRole("navigation", { name: /Navigation mobile/i }).waitFor();
@@ -127,6 +110,7 @@ try {
     path: "/tmp/dealyva-home-mobile.png",
     fullPage: true,
   });
+  screenshots.push("/tmp/dealyva-home-mobile.png");
 
   const uniqueErrors = [...new Set(consoleErrors)].filter(
     (message) =>
@@ -142,12 +126,7 @@ try {
       {
         status: "ok",
         promotionCardsOnFirstLoad: promotionCount,
-        screenshots: [
-          "/tmp/dealyva-home-desktop.png",
-          "/tmp/dealyva-detail-desktop.png",
-          "/tmp/dealyva-admin-desktop.png",
-          "/tmp/dealyva-home-mobile.png",
-        ],
+        screenshots,
       },
       null,
       2,

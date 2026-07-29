@@ -112,7 +112,7 @@ export function BrandsPage() {
         <div className="catalog-hero__content">
           <p className="eyebrow">
             <Sparkles aria-hidden="true" size={16} />
-            Catalogue de démonstration
+            Annonceurs partenaires
           </p>
           <h1 id="brands-title">Vos marques, vos réductions.</h1>
           <p className="catalog-hero__intro">
@@ -357,10 +357,9 @@ export function BrandsPage() {
         )}
       </section>
 
-      <p className="demo-disclaimer">
+      <p className="source-disclaimer">
         Les marques restent la propriété de leurs titulaires. Les offres
-        partenaires proviennent du réseau Awin ; les autres données sont
-        présentées à des fins de démonstration.
+        publiées proviennent des annonceurs approuvés via le réseau Awin.
       </p>
     </main>
   );

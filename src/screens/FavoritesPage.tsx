@@ -1,14 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
-  Bell,
-  BellOff,
   Heart,
   Search,
   SlidersHorizontal,
   Trash2,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { DemoBadge } from "../components/DemoBadge";
 import { PromotionCard } from "../components/PromotionCard";
 import { useApp } from "../context/AppContext";
 import type { Promotion } from "../types";
@@ -20,29 +17,6 @@ type FavoriteSort =
   | "ending"
   | "brand";
 
-const FAVORITE_ALERTS_KEY = "dealyva:favorite-alerts";
-const LEGACY_FAVORITE_ALERTS_KEY = "offrely:favorite-alerts";
-
-function loadFavoriteAlerts() {
-  if (typeof window === "undefined") return [];
-
-  try {
-    const legacyValue = window.localStorage.getItem(LEGACY_FAVORITE_ALERTS_KEY);
-    const rawValue =
-      window.localStorage.getItem(FAVORITE_ALERTS_KEY) ?? legacyValue ?? "[]";
-    const storedValue: unknown = JSON.parse(rawValue);
-    if (legacyValue !== null) {
-      window.localStorage.setItem(FAVORITE_ALERTS_KEY, rawValue);
-      window.localStorage.removeItem(LEGACY_FAVORITE_ALERTS_KEY);
-    }
-    return Array.isArray(storedValue)
-      ? storedValue.filter((value): value is string => typeof value === "string")
-      : [];
-  } catch {
-    return [];
-  }
-}
-
 function isExpired(promotion: Promotion) {
   return (
     promotion.isExpired === true ||
@@ -51,21 +25,8 @@ function isExpired(promotion: Promotion) {
 }
 
 export default function FavoritesPage() {
-  const { promotions, favorites, toggleFavorite, showToast } = useApp();
+  const { promotions, favorites, toggleFavorite } = useApp();
   const [sort, setSort] = useState<FavoriteSort>("saved");
-  const [favoriteAlerts, setFavoriteAlerts] =
-    useState<string[]>(loadFavoriteAlerts);
-
-  useEffect(() => {
-    try {
-      window.localStorage.setItem(
-        FAVORITE_ALERTS_KEY,
-        JSON.stringify(favoriteAlerts),
-      );
-    } catch {
-      // The page remains usable when local storage is unavailable.
-    }
-  }, [favoriteAlerts]);
 
   const savedPromotions = useMemo(() => {
     const favoriteOrder = new Map(
@@ -103,51 +64,14 @@ export default function FavoritesPage() {
     (promotion) => !isExpired(promotion),
   );
   const expiredPromotions = savedPromotions.filter(isExpired);
-  const activeAlertCount = favoriteAlerts.filter((id) =>
-    favorites.includes(id),
-  ).length;
-
-  const toggleAlert = (promotion: Promotion) => {
-    const alertIsActive = favoriteAlerts.includes(promotion.id);
-    setFavoriteAlerts((current) =>
-      alertIsActive
-        ? current.filter((id) => id !== promotion.id)
-        : [...current, promotion.id],
-    );
-    showToast(
-      alertIsActive
-        ? `Alerte désactivée pour ${promotion.brand}`
-        : `Alerte fictive activée pour ${promotion.brand}`,
-      alertIsActive ? "default" : "success",
-    );
-  };
-
   const removeFavorite = (promotion: Promotion) => {
-    setFavoriteAlerts((current) =>
-      current.filter((id) => id !== promotion.id),
-    );
     toggleFavorite(promotion.id);
   };
 
   const renderFavorite = (promotion: Promotion) => {
-    const alertIsActive = favoriteAlerts.includes(promotion.id);
-
     return (
       <div className="favorite-item" key={promotion.id}>
         <div className="favorite-item__controls">
-          <button
-            type="button"
-            className={`favorite-alert-button${alertIsActive ? " is-active" : ""}`}
-            onClick={() => toggleAlert(promotion)}
-            aria-pressed={alertIsActive}
-          >
-            {alertIsActive ? (
-              <Bell size={16} aria-hidden="true" />
-            ) : (
-              <BellOff size={16} aria-hidden="true" />
-            )}
-            {alertIsActive ? "Alerte active" : "Créer une alerte"}
-          </button>
           <button
             type="button"
             className="favorite-remove-button"
@@ -173,17 +97,15 @@ export default function FavoritesPage() {
           </p>
           <h1 id="favorites-title">Mes favoris</h1>
           <p>
-            Retrouvez vos offres sauvegardées, organisez-les et activez une
-            alerte de démonstration pour ne pas laisser passer une baisse de
-            prix.
+            Retrouvez et organisez les offres partenaires que vous avez
+            sauvegardées.
           </p>
         </div>
         <div className="account-hero__aside">
-          <DemoBadge />
           <span>
-            <strong>{activeAlertCount}</strong> alerte
-            {activeAlertCount > 1 ? "s" : ""} active
-            {activeAlertCount > 1 ? "s" : ""}
+            <strong>{savedPromotions.length}</strong> offre
+            {savedPromotions.length !== 1 ? "s" : ""} sauvegardée
+            {savedPromotions.length !== 1 ? "s" : ""}
           </span>
         </div>
       </section>
@@ -247,8 +169,8 @@ export default function FavoritesPage() {
                 </h2>
               </div>
               <p>
-                Les prix et disponibilités sont fictifs dans cette
-                démonstration.
+                Vérifiez toujours le prix et la disponibilité sur le site du
+                marchand.
               </p>
             </div>
             {activePromotions.length > 0 ? (
@@ -257,7 +179,7 @@ export default function FavoritesPage() {
               </div>
             ) : (
               <div className="inline-empty-state">
-                <BellOff size={20} aria-hidden="true" />
+                <Heart size={20} aria-hidden="true" />
                 <p>Aucune de vos offres sauvegardées n’est encore active.</p>
               </div>
             )}

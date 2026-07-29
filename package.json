@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vinext dev -H 0.0.0.0 --port 5173",
-    "build": "tsc -b && vinext build && node scripts/prepare-sites-build.mjs",
-    "build:pages": "tsc -b && vite build --config vite.static.config.ts",
+    "build": "node scripts/prepare-adsense.mjs && tsc -b && vinext build && node scripts/prepare-sites-build.mjs",
+    "build:pages": "node scripts/prepare-adsense.mjs && tsc -b && vite build --config vite.static.config.ts",
     "lint": "eslint .",
     "qa": "node scripts/qa.mjs",
     "awin:check": "node --env-file-if-exists=.env.local scripts/awin-check.mjs",

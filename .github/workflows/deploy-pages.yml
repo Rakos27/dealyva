@@ -22,6 +22,10 @@ jobs:
     env:
       AWIN_ACCESS_TOKEN: ${{ secrets.AWIN_ACCESS_TOKEN }}
       AWIN_PUBLISHER_ID: ${{ secrets.AWIN_PUBLISHER_ID }}
+      VITE_ADSENSE_CLIENT_ID: ${{ vars.ADSENSE_CLIENT_ID }}
+      VITE_ADSENSE_SLOT_HOME_TOP: ${{ vars.ADSENSE_SLOT_HOME_TOP }}
+      VITE_ADSENSE_SLOT_HOME_INLINE: ${{ vars.ADSENSE_SLOT_HOME_INLINE }}
+      VITE_ADSENSE_SLOT_DETAIL: ${{ vars.ADSENSE_SLOT_DETAIL }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

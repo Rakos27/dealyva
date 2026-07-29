@@ -10,9 +10,10 @@ import {
   WifiOff,
   X,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { ActiveFilters } from "../components/ActiveFilters";
+import { AdSlot, adSenseSlots } from "../components/AdSense";
 import { BrandSelector } from "../components/BrandSelector";
 import { FilterPanel } from "../components/FilterPanel";
 import { PromotionCard } from "../components/PromotionCard";
@@ -68,6 +69,7 @@ export default function HomePage() {
     dismissedRecommendations,
     dismissRecommendation,
     lastUpdated,
+    isFeedLoading,
     isRefreshing,
     refreshOffers,
   } = useApp();
@@ -86,14 +88,8 @@ export default function HomePage() {
     };
   });
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const [initialLoading, setInitialLoading] = useState(true);
   const [visibleCount, setVisibleCount] = useState(12);
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    const timer = window.setTimeout(() => setInitialLoading(false), 420);
-    return () => window.clearTimeout(timer);
-  }, []);
 
   const livePromotions = useMemo(
     () =>
@@ -220,7 +216,7 @@ export default function HomePage() {
     try {
       await refreshOffers();
     } catch {
-      setError("Le flux de démonstration n’a pas pu être actualisé.");
+      setError("Le flux partenaire n’a pas pu être actualisé.");
     }
   };
 
@@ -270,16 +266,18 @@ export default function HomePage() {
               </button>
             </label>
             <div className="home-hero__actions">
-              <BrandSelector
-                large
-                selectedOnly={filters.selectedBrandsOnly}
-                onSelectedOnlyChange={(selectedBrandsOnly) =>
-                  setFilters({ ...filters, selectedBrandsOnly })
-                }
-              />
+              {livePromotions.length > 0 && (
+                <BrandSelector
+                  large
+                  selectedOnly={filters.selectedBrandsOnly}
+                  onSelectedOnlyChange={(selectedBrandsOnly) =>
+                    setFilters({ ...filters, selectedBrandsOnly })
+                  }
+                />
+              )}
               <span>
                 <CheckCircle2 size={16} />
-                Gratuit, indépendant et transparent
+                Offres partenaires Awin
               </span>
             </div>
             <div className="last-update">
@@ -319,10 +317,24 @@ export default function HomePage() {
               </div>
             </Link>
           )}
+          {!heroDeal && !isFeedLoading && (
+            <aside className="partner-feed-card">
+              <span className="partner-feed-card__icon">
+                <Clock3 size={24} aria-hidden="true" />
+              </span>
+              <p className="eyebrow">Nouveaux partenaires en cours</p>
+              <h2>Les premières offres arrivent bientôt.</h2>
+              <p>
+                Dealyva publie uniquement les promotions transmises par des
+                annonceurs approuvés. Aucun prix ni code n’est inventé.
+              </p>
+            </aside>
+          )}
         </div>
       </section>
 
       <main>
+        <AdSlot slot={adSenseSlots.homeTop} placement="home-top" />
         <section className="promotions-section" id="promotions">
           <div className="container">
             <div className="section-heading section-heading--results">
@@ -330,12 +342,13 @@ export default function HomePage() {
                 <span className="eyebrow">Promotions sélectionnées</span>
                 <h2>Les offres qui valent le détour.</h2>
                 <p>
-                  {initialLoading
+                  {isFeedLoading
                     ? "Recherche des meilleures opportunités…"
-                    : `${filteredPromotions.length} offre${filteredPromotions.length > 1 ? "s" : ""} active${filteredPromotions.length > 1 ? "s" : ""}`}
+                    : `${filteredPromotions.length} offre${filteredPromotions.length !== 1 ? "s" : ""} partenaire${filteredPromotions.length !== 1 ? "s" : ""}`}
                 </p>
               </div>
-              <div className="results-controls">
+              {livePromotions.length > 0 && (
+                <div className="results-controls">
                 <button
                   type="button"
                   className="button button--outline mobile-filter-trigger"
@@ -366,9 +379,12 @@ export default function HomePage() {
                   </select>
                   <ChevronDown size={15} aria-hidden="true" />
                 </label>
-              </div>
+                </div>
+              )}
             </div>
-            <ActiveFilters filters={filters} onChange={setFilters} />
+            {livePromotions.length > 0 && (
+              <ActiveFilters filters={filters} onChange={setFilters} />
+            )}
 
             {error && (
               <div className="status-panel status-panel--error" role="alert">
@@ -385,32 +401,59 @@ export default function HomePage() {
               </div>
             )}
 
-            <div className="catalog-layout">
-              <FilterPanel
-                filters={filters}
-                onChange={setFilters}
-                onReset={resetFilters}
-                mobileOpen={filtersOpen}
-                onMobileClose={() => setFiltersOpen(false)}
-              />
-              <div className="catalog-results">
-                {initialLoading ? (
-                  <div
-                    className="promotion-grid"
-                    aria-label="Chargement des promotions"
-                    aria-busy="true"
-                  >
-                    {Array.from({ length: 6 }, (_, index) => (
-                      <PromotionSkeleton key={index} />
-                    ))}
-                  </div>
-                ) : filteredPromotions.length ? (
+            {isFeedLoading ? (
+              <div
+                className="promotion-grid"
+                aria-label="Chargement des promotions"
+                aria-busy="true"
+              >
+                {Array.from({ length: 6 }, (_, index) => (
+                  <PromotionSkeleton key={index} />
+                ))}
+              </div>
+            ) : livePromotions.length === 0 ? (
+              <div className="empty-state live-catalog-empty" aria-live="polite">
+                <span className="empty-state__icon">
+                  <Clock3 size={27} aria-hidden="true" />
+                </span>
+                <span className="eyebrow">Catalogue partenaire</span>
+                <h3>Les offres arrivent bientôt.</h3>
+                <p>
+                  Nous attendons l’approbation des premiers annonceurs Awin.
+                  Revenez prochainement pour découvrir leurs promotions
+                  officielles.
+                </p>
+                <button
+                  type="button"
+                  className="button button--dark"
+                  onClick={handleRefresh}
+                  disabled={isRefreshing}
+                >
+                  <RefreshCw size={16} aria-hidden="true" />
+                  Vérifier les nouvelles offres
+                </button>
+              </div>
+            ) : (
+              <div className="catalog-layout">
+                <FilterPanel
+                  filters={filters}
+                  onChange={setFilters}
+                  onReset={resetFilters}
+                  mobileOpen={filtersOpen}
+                  onMobileClose={() => setFiltersOpen(false)}
+                />
+                <div className="catalog-results">
+                  {filteredPromotions.length ? (
                   <>
                     <div className="promotion-grid">
                       {filteredPromotions.slice(0, visibleCount).map((promotion) => (
                         <PromotionCard key={promotion.id} promotion={promotion} />
                       ))}
                     </div>
+                    <AdSlot
+                      slot={adSenseSlots.homeInline}
+                      placement="home-inline"
+                    />
                     {visibleCount < filteredPromotions.length && (
                       <button
                         type="button"
@@ -443,52 +486,54 @@ export default function HomePage() {
                       Réinitialiser les filtres
                     </button>
                   </div>
-                )}
+                  )}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </section>
 
-        <section className="recommendations-section">
-          <div className="container">
-            <div className="recommendations-section__intro">
-              <span className="sparkle-icon">
-                <Sparkles size={20} />
-              </span>
-              <span className="eyebrow">Sélection personnalisée</span>
-              <h2>Ces offres pourraient vous plaire.</h2>
-              <p>
-                Votre sélection évolue avec les marques, catégories et produits que
-                vous consultez. Tout reste dans votre navigateur.
-              </p>
+        {recommendations.length > 0 && (
+          <section className="recommendations-section">
+            <div className="container">
+              <div className="recommendations-section__intro">
+                <span className="sparkle-icon">
+                  <Sparkles size={20} />
+                </span>
+                <span className="eyebrow">Sélection personnalisée</span>
+                <h2>Ces offres pourraient vous plaire.</h2>
+                <p>
+                  Votre sélection évolue avec les marques, catégories et produits
+                  que vous consultez. Tout reste dans votre navigateur.
+                </p>
+              </div>
+              <div className="recommendations-grid">
+                {recommendations.map(({ promotion, reason }) => (
+                  <div className="recommendation-item" key={promotion.id}>
+                    <PromotionCard promotion={promotion} reason={reason} compact />
+                    <button
+                      type="button"
+                      className="not-interested"
+                      onClick={() => dismissRecommendation(promotion.id)}
+                    >
+                      Cela ne m’intéresse pas
+                      <X size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="recommendations-grid">
-              {recommendations.map(({ promotion, reason }) => (
-                <div className="recommendation-item" key={promotion.id}>
-                  <PromotionCard promotion={promotion} reason={reason} compact />
-                  <button
-                    type="button"
-                    className="not-interested"
-                    onClick={() => dismissRecommendation(promotion.id)}
-                  >
-                    Cela ne m’intéresse pas
-                    <X size={14} />
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         <section className="transparency-strip">
           <div className="container transparency-strip__inner">
             <div>
               <Clock3 size={20} />
               <span>
-                <strong>Des offres partenaires ou de démonstration, toujours identifiées.</strong>
+                <strong>Des offres partenaires, clairement identifiées.</strong>
                 <small>
-                  Les liens d’affiliation et les données fictives sont signalés
-                  clairement.
+                  Dealyva peut percevoir une commission, sans surcoût pour vous.
                 </small>
               </span>
             </div>
